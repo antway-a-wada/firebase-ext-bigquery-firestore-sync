@@ -20,13 +20,15 @@ This document outlines the library version upgrades and any breaking changes to 
 |---------|-------------|-------------|--------|
 | `@types/jest` | 29.5.0 | **29.5.13** | Patch update |
 | `@types/node` | 20.11.0 | **22.10.2** | Major update |
-| `@typescript-eslint/eslint-plugin` | 6.0.0 | **8.18.2** | Major update |
-| `@typescript-eslint/parser` | 6.0.0 | **8.18.2** | Major update |
-| `eslint` | 8.56.0 | **9.18.0** | Major update |
+| `typescript-eslint` (unified) | 6.0.0 | **8.56.0** | Major update |
+| `eslint` | 8.56.0 | **10.0.0** | Major update |
+| `jest` | 29.7.0 | **30.0.0** | Major update |
 | `eslint-config-prettier` | 9.1.0 | **9.1.0** | No change |
 | `eslint-plugin-import` | 2.29.0 | **2.31.0** | Minor update |
 | `jest` | 29.7.0 | **29.7.0** | No change |
-| `prettier` | 3.2.0 | **3.4.2** | Minor update |
+| `prettier` | 3.2.0 | **3.8.1** | Minor update |
+| `@types/jest` | 29.5.0 | **30.0.0** | Major update |
+| `@types/node` | 20.11.0 | **22.10.5** | Major update |
 | `ts-jest` | 29.1.0 | **29.2.5** | Minor update |
 | `typescript` | 5.3.0 | **5.7.2** | Minor update |
 

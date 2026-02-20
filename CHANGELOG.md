@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-02-20
+
+### Changed
+- **Updated to Absolute Latest Versions**:
+  - `eslint` upgraded to **10.0.0** (with flat config migration)
+  - `typescript-eslint` upgraded to **8.56.0** (unified package)
+  - `jest` upgraded to **30.0.0**
+  - `@types/jest` upgraded to **30.0.0**
+  - `@types/node` upgraded to **22.10.5**
+  - `prettier` upgraded to **3.8.1**
+
+- **ESLint v10 Complete Migration**:
+  - Removed `.eslintrc.js` (legacy config)
+  - Created `eslint.config.js` (new flat config)
+  - Migrated to ES Modules (`"type": "module"` in package.json)
+  - Replaced separate TypeScript ESLint packages with unified `typescript-eslint` package
+  - Added `@eslint/js` for core configurations
+
+- **Jest 30 Migration**:
+  - Updated jest.config.js to ES Module format
+  - Added ESM support configuration for ts-jest
+
+### Added
+- `ESLINT_V10_MIGRATION.md` - Comprehensive ESLint v10 migration guide
+- ES Module support throughout the project
+
+### Removed
+- `.eslintrc.js` (replaced by `eslint.config.js`)
+- `@typescript-eslint/eslint-plugin` (replaced by `typescript-eslint`)
+- `@typescript-eslint/parser` (replaced by `typescript-eslint`)
+
 ## [0.1.1] - 2026-02-20
 
 ### Changed
@@ -12,12 +43,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Upgraded `firebase-admin` from 12.0.0 to 13.6.1
   - Upgraded `firebase-functions` from 5.0.0 to 7.0.5
   - Upgraded `@google-cloud/bigquery` from 7.3.0 to 8.1.1
-  - Upgraded `@typescript-eslint/*` from 6.x to 8.18.2
-  - Upgraded `eslint` from 8.56.0 to 9.18.0
-  - Upgraded `@types/node` from 20.11.0 to 22.10.2
+  - Upgraded `eslint` from 8.56.0 to **10.0.0** (flat config migration)
+  - Upgraded `typescript-eslint` (unified package) to 8.56.0
+  - Upgraded `jest` from 29.7.0 to **30.0.0**
+  - Upgraded `@types/jest` from 29.5.0 to 30.0.0
+  - Upgraded `@types/node` from 20.11.0 to 22.10.5
   - Upgraded `typescript` from 5.3.0 to 5.7.2
-  - Upgraded `prettier` from 3.2.0 to 3.4.2
+  - Upgraded `prettier` from 3.2.0 to 3.8.1
   - Upgraded various other dev dependencies to latest versions
+
+- **ESLint v10 Migration**:
+  - Migrated from `.eslintrc.js` to `eslint.config.js` (flat config)
+  - Replaced `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` with unified `typescript-eslint` package
+  - Added `@eslint/js` for core ESLint configurations
+  - Updated package.json to use ES Modules (`"type": "module"`)
 
 ### Added
 - `UPGRADE_NOTES.md` documenting migration guide and breaking changes

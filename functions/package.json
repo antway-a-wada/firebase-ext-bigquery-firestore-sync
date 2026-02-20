@@ -1,11 +1,12 @@
 {
   "name": "bigquery-firestore-sync-functions",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Cloud Functions for BigQuery to Firestore Sync extension",
   "main": "lib/index.js",
   "engines": {
     "node": "22"
   },
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
@@ -14,8 +15,8 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "eslint \"src/**/*.ts\"",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --check \"src/**/*.{ts,js,json}\"",
     "format:fix": "prettier --write \"src/**/*.{ts,js,json}\"",
     "format:all": "prettier --write \"./**/*.{ts,js,json,md,yml,yaml}\" --ignore-path .prettierignore",
@@ -32,17 +33,17 @@
     "firebase-functions": "^7.0.5"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.13",
-    "@types/node": "^22.10.2",
-    "@typescript-eslint/eslint-plugin": "^8.18.2",
-    "@typescript-eslint/parser": "^8.18.2",
-    "eslint": "^9.18.0",
+    "@eslint/js": "^10.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.10.5",
+    "eslint": "^10.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
-    "jest": "^29.7.0",
-    "prettier": "^3.4.2",
+    "jest": "^30.0.0",
+    "prettier": "^3.8.1",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.56.0"
   },
   "private": true
 }
