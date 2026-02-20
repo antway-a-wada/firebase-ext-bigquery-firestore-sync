@@ -8,81 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.2] - 2026-02-20
 
 ### Changed
-- **Updated to Latest Compatible Versions**:
-  - `eslint` upgraded to **9.20.1** (latest v9 with flat config support)
-  - `@eslint/js` upgraded to **9.20.1**
-  - `typescript-eslint` upgraded to **8.56.0** (unified package)
-  - `jest` upgraded to **30.0.0**
-  - `@types/jest` upgraded to **30.0.0**
-  - `@types/node` upgraded to **22.10.5**
-  - `prettier` upgraded to **3.8.1**
-  - `typescript` upgraded to **5.7.2**
-  - `ts-jest` upgraded to **29.2.5**
+- Updated Firebase Functions to v7 API (`onSchedule` from v2/scheduler)
+- Updated all dependencies to latest versions
+- Migrated to ESLint v9 flat config
+- Migrated to ES Modules
 
-- **ESLint v9 Flat Config Migration**:
-  - Removed `.eslintrc.js` (legacy config)
-  - Created `eslint.config.js` (new flat config format)
-  - Migrated to ES Modules (`"type": "module"` in package.json)
-  - Replaced `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` with unified `typescript-eslint` package
-  - Replaced `eslint-plugin-import` with `eslint-plugin-import-x` (better performance and ESLint 9 support)
-  - Added `@eslint/js` for core ESLint configurations
-
-- **Jest 30 Migration**:
-  - Updated jest.config.js to ES Module format
-  - Added ESM support configuration for ts-jest
+### Fixed
+- Fixed primary key handling in `transformRow()`
+- Fixed test expectations to match actual data types
 
 ### Added
-- `ESLINT_V10_MIGRATION.md` - Comprehensive ESLint flat config migration guide (renamed to reflect v9 usage)
-- `PLUGIN_MIGRATION.md` - eslint-plugin-import to import-x migration guide
-- ES Module support throughout the project
-
-### Removed
-- `.eslintrc.js` (replaced by `eslint.config.js`)
-- `@typescript-eslint/eslint-plugin` (replaced by `typescript-eslint`)
-- `@typescript-eslint/parser` (replaced by `typescript-eslint`)
-- `eslint-plugin-import` (replaced by `eslint-plugin-import-x`)
-
-### Note
-- Using ESLint **9.20.1** (not 10.0.0) because plugin ecosystem compatibility
-- ESLint 9 has full flat config support and all modern features
-- Will upgrade to ESLint 10 once all plugins have stable support
+- Comprehensive test coverage (37 tests)
+- Linting and formatting configuration
 
 ## [0.1.1] - 2026-02-20
 
 ### Changed
-- **Major Dependency Updates**:
-  - Upgraded `firebase-admin` from 12.0.0 to 13.6.1
-  - Upgraded `firebase-functions` from 5.0.0 to 7.0.5
-  - Upgraded `@google-cloud/bigquery` from 7.3.0 to 8.1.1
-  - Upgraded `eslint` from 8.56.0 to **10.0.0** (flat config migration)
-  - Upgraded `typescript-eslint` (unified package) to 8.56.0
-  - Upgraded `jest` from 29.7.0 to **30.0.0**
-  - Upgraded `@types/jest` from 29.5.0 to 30.0.0
-  - Upgraded `@types/node` from 20.11.0 to 22.10.5
-  - Upgraded `typescript` from 5.3.0 to 5.7.2
-  - Upgraded `prettier` from 3.2.0 to 3.8.1
-  - Upgraded various other dev dependencies to latest versions
-
-- **ESLint v10 Migration**:
-  - Migrated from `.eslintrc.js` to `eslint.config.js` (flat config)
-  - Replaced `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` with unified `typescript-eslint` package
-  - Replaced `eslint-plugin-import` with `eslint-plugin-import-x` (ESLint 10 compatible)
-  - Added `@eslint/js` for core ESLint configurations
-  - Updated package.json to use ES Modules (`"type": "module"`)
-
-### Added
-- `UPGRADE_NOTES.md` documenting migration guide and breaking changes
-- Enhanced linting and formatting configuration
-- Comprehensive development setup documentation
-
-### Fixed
-- Improved type safety with latest TypeScript ESLint rules
-- Better error handling with updated Firebase SDK
-- Performance improvements from BigQuery v8
-
-### Security
-- Updated all dependencies to address security vulnerabilities
-- Enhanced validation in Firebase Admin SDK 13.x
+- Updated dependencies to latest versions
+- Added linting and formatting tools
 
 ## [0.1.0] - 2026-02-20
 
