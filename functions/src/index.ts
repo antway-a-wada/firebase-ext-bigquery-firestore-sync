@@ -1,12 +1,13 @@
 /**
  * BigQuery to Firestore Sync Extension
- * 
+ *
  * This extension syncs data from BigQuery tables to Firestore collections
  * with incremental updates based on a timestamp column.
  */
 
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
+
 import {loadConfig} from './config';
 import {performIncrementalSync, performDeleteSync} from './sync';
 
@@ -23,10 +24,10 @@ export const syncBigQueryToFirestore = functions
   })
   .pubsub
   .schedule('every 1 hours') // This will be overridden by extension.yaml
-  .onRun(async (_context) => {
+  .onRun(async (_context): Promise<null> => {
     try {
       console.log('=== BigQuery to Firestore Sync Started ===');
-      
+
       // Load configuration
       const config = loadConfig();
       console.log('Configuration loaded:', {
@@ -63,7 +64,7 @@ export const syncBigQueryToFirestore = functions
     } catch (error) {
       console.error('=== BigQuery to Firestore Sync Failed ===');
       console.error('Error:', error);
-      
+
       // Re-throw to mark the function execution as failed
       throw error;
     }

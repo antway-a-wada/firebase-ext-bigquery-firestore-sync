@@ -3,6 +3,7 @@
  */
 
 import {BigQuery} from '@google-cloud/bigquery';
+
 import {ExtensionConfig} from './config';
 import {BigQueryRow} from './types';
 
@@ -18,7 +19,7 @@ export async function queryUpdatedRecords(
   });
 
   const tableRef = `\`${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}\``;
-  
+
   let whereClause = '';
   if (sinceTimestamp) {
     const timestampStr = sinceTimestamp.toISOString();
@@ -39,13 +40,15 @@ export async function queryUpdatedRecords(
     location: 'US',
   });
 
-  console.log(`BigQuery job ${job.id} started.`);
+  console.log(`BigQuery job ${job.id ?? 'unknown'} started.`);
 
   const [rows] = await job.getQueryResults();
-  
+
   const metadata = await job.getMetadata();
   const bytesProcessed = metadata[0]?.statistics?.query?.totalBytesProcessed;
-  console.log(`Query completed. Rows: ${rows.length}, Bytes processed: ${bytesProcessed || 'N/A'}`);
+  console.log(
+    `Query completed. Rows: ${rows.length}, Bytes processed: ${bytesProcessed ?? 'N/A'}`
+  );
 
   return rows as BigQueryRow[];
 }
@@ -62,7 +65,7 @@ export async function queryAllDocumentIds(
   });
 
   const tableRef = `\`${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}\``;
-  
+
   const query = `
     SELECT DISTINCT ${config.primaryKeyColumn}
     FROM ${tableRef}
@@ -76,10 +79,10 @@ export async function queryAllDocumentIds(
   });
 
   const [rows] = await job.getQueryResults();
-  
+
   const ids = new Set<string>();
   for (const row of rows) {
-    const id = String(row[config.primaryKeyColumn]);
+    const id = String(row[config.primaryKeyColumn] as unknown);
     if (id) {
       ids.add(id);
     }
@@ -101,7 +104,7 @@ export async function getMaxTimestamp(
   });
 
   const tableRef = `\`${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}\``;
-  
+
   const query = `
     SELECT MAX(${config.timestampColumn}) as max_timestamp
     FROM ${tableRef}
@@ -113,10 +116,10 @@ export async function getMaxTimestamp(
   });
 
   const [rows] = await job.getQueryResults();
-  
+
   if (rows.length === 0 || !rows[0].max_timestamp) {
     return null;
   }
 
-  return new Date(rows[0].max_timestamp.value);
+  return new Date((rows[0].max_timestamp as {value: string}).value);
 }

@@ -2,12 +2,13 @@
  * Data transformation utilities for BigQuery to Firestore conversion
  */
 
-import {BigQueryRow, FirestoreDocument} from './types';
 import {ExtensionConfig} from './config';
+import {BigQueryRow, FirestoreDocument} from './types';
 
 /**
  * Convert BigQuery value to Firestore-compatible value
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function convertValue(value: any): any {
   if (value === null || value === undefined) {
     return null;
@@ -15,8 +16,8 @@ function convertValue(value: any): any {
 
   // BigQuery TIMESTAMP to Firestore Timestamp
   if (value && typeof value === 'object' && 'value' in value) {
-    const timestamp = new Date(value.value);
-    if (!isNaN(timestamp.getTime())) {
+    const timestamp = new Date((value as {value: string}).value);
+    if (!Number.isNaN(timestamp.getTime())) {
       return timestamp;
     }
   }
@@ -24,7 +25,7 @@ function convertValue(value: any): any {
   // BigQuery DATE to Firestore Timestamp
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
     const date = new Date(value);
-    if (!isNaN(date.getTime())) {
+    if (!Number.isNaN(date.getTime())) {
       return date;
     }
   }
@@ -32,7 +33,7 @@ function convertValue(value: any): any {
   // BigQuery DATETIME to Firestore Timestamp
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
     const datetime = new Date(value);
-    if (!isNaN(datetime.getTime())) {
+    if (!Number.isNaN(datetime.getTime())) {
       return datetime;
     }
   }
@@ -40,7 +41,7 @@ function convertValue(value: any): any {
   // BigQuery INT64 (comes as string)
   if (typeof value === 'string' && /^-?\d+$/.test(value)) {
     const num = parseInt(value, 10);
-    if (!isNaN(num) && num <= Number.MAX_SAFE_INTEGER && num >= Number.MIN_SAFE_INTEGER) {
+    if (!Number.isNaN(num) && num <= Number.MAX_SAFE_INTEGER && num >= Number.MIN_SAFE_INTEGER) {
       return num;
     }
   }
@@ -62,11 +63,12 @@ function convertValue(value: any): any {
 
   // BigQuery ARRAY
   if (Array.isArray(value)) {
-    return value.map(item => convertValue(item));
+    return value.map((item) => convertValue(item));
   }
 
   // BigQuery STRUCT/RECORD
   if (typeof value === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const converted: Record<string, any> = {};
     for (const [key, val] of Object.entries(value)) {
       converted[key] = convertValue(val);

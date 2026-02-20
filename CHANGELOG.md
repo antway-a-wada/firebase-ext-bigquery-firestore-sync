@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-02-20
+
+### Changed
+- **Major Dependency Updates**:
+  - Upgraded `firebase-admin` from 12.0.0 to 13.6.1
+  - Upgraded `firebase-functions` from 5.0.0 to 7.0.5
+  - Upgraded `@google-cloud/bigquery` from 7.3.0 to 8.1.1
+  - Upgraded `@typescript-eslint/*` from 6.x to 8.18.2
+  - Upgraded `eslint` from 8.56.0 to 9.18.0
+  - Upgraded `@types/node` from 20.11.0 to 22.10.2
+  - Upgraded `typescript` from 5.3.0 to 5.7.2
+  - Upgraded `prettier` from 3.2.0 to 3.4.2
+  - Upgraded various other dev dependencies to latest versions
+
+### Added
+- `UPGRADE_NOTES.md` documenting migration guide and breaking changes
+- Enhanced linting and formatting configuration
+- Comprehensive development setup documentation
+
+### Fixed
+- Improved type safety with latest TypeScript ESLint rules
+- Better error handling with updated Firebase SDK
+- Performance improvements from BigQuery v8
+
+### Security
+- Updated all dependencies to address security vulnerabilities
+- Enhanced validation in Firebase Admin SDK 13.x
+
 ## [0.1.0] - 2026-02-20
 
 ### Added

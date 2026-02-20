@@ -2,7 +2,7 @@
   "name": "bigquery-firestore-sync",
   "version": "0.1.0",
   "description": "Firebase Extension to sync data from BigQuery to Firestore",
-  "author": "Tsukurioki <support@tsukurioki.jp>",
+  "author": "Antway.inc <firebase-developer@antway.co.jp>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

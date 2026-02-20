@@ -22,14 +22,14 @@ function parseFieldMapping(mappingStr: string | undefined): Record<string, strin
   if (!mappingStr || mappingStr.trim() === '') {
     return {};
   }
-  
+
   try {
-    const parsed = JSON.parse(mappingStr);
+    const parsed = JSON.parse(mappingStr) as unknown;
     if (typeof parsed !== 'object' || Array.isArray(parsed)) {
       console.warn('FIELD_MAPPING must be a JSON object. Using empty mapping.');
       return {};
     }
-    return parsed;
+    return parsed as Record<string, string>;
   } catch (error) {
     console.error('Failed to parse FIELD_MAPPING:', error);
     return {};
@@ -43,11 +43,11 @@ function parseExcludeFields(excludeStr: string | undefined): string[] {
   if (!excludeStr || excludeStr.trim() === '') {
     return [];
   }
-  
+
   return excludeStr
     .split(',')
-    .map(field => field.trim())
-    .filter(field => field.length > 0);
+    .map((field) => field.trim())
+    .filter((field) => field.length > 0);
 }
 
 /**
