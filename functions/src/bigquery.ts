@@ -44,8 +44,11 @@ export async function queryUpdatedRecords(
 
   const [rows] = await job.getQueryResults();
 
-  const metadata = await job.getMetadata();
-  const bytesProcessed = metadata[0]?.statistics?.query?.totalBytesProcessed;
+  const metadataResponse = await job.getMetadata();
+  const metadata = metadataResponse[0] as
+    | {statistics?: {query?: {totalBytesProcessed?: string}}}
+    | undefined;
+  const bytesProcessed = metadata?.statistics?.query?.totalBytesProcessed;
   console.log(
     `Query completed. Rows: ${rows.length}, Bytes processed: ${bytesProcessed ?? 'N/A'}`
   );
@@ -82,8 +85,9 @@ export async function queryAllDocumentIds(
 
   const ids = new Set<string>();
   for (const row of rows) {
-    const id = String(row[config.primaryKeyColumn] as unknown);
-    if (id) {
+    const rowData = row as Record<string, unknown>;
+    const id = String(rowData[config.primaryKeyColumn]);
+    if (id && id !== 'undefined') {
       ids.add(id);
     }
   }
@@ -117,9 +121,16 @@ export async function getMaxTimestamp(
 
   const [rows] = await job.getQueryResults();
 
-  if (rows.length === 0 || !rows[0].max_timestamp) {
+  if (rows.length === 0) {
     return null;
   }
 
-  return new Date((rows[0].max_timestamp as {value: string}).value);
+  const firstRow = rows[0] as Record<string, unknown>;
+  const maxTimestamp = firstRow.max_timestamp as {value: string} | null;
+
+  if (!maxTimestamp) {
+    return null;
+  }
+
+  return new Date(maxTimestamp.value);
 }
