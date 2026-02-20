@@ -88,12 +88,14 @@ export function transformRow(
   config: ExtensionConfig
 ): FirestoreDocument | null {
   try {
-    const documentId = String(row[config.primaryKeyColumn]);
+    const primaryKeyValue = row[config.primaryKeyColumn];
     
-    if (!documentId) {
+    if (primaryKeyValue === undefined || primaryKeyValue === null) {
       console.warn('Row missing primary key:', config.primaryKeyColumn);
       return null;
     }
+    
+    const documentId = String(primaryKeyValue);
 
     const data: Record<string, any> = {};
 

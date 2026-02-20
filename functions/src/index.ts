@@ -6,7 +6,7 @@
  */
 
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import {onSchedule} from 'firebase-functions/v2/scheduler';
 
 import {loadConfig} from './config';
 import {performIncrementalSync, performDeleteSync} from './sync';
@@ -17,14 +17,13 @@ admin.initializeApp();
 /**
  * Scheduled function to sync data from BigQuery to Firestore
  */
-export const syncBigQueryToFirestore = functions
-  .runWith({
+export const syncBigQueryToFirestore = onSchedule(
+  {
+    schedule: 'every 1 hours', // This will be overridden by extension.yaml
     timeoutSeconds: 540, // 9 minutes
-    memory: '512MB',
-  })
-  .pubsub
-  .schedule('every 1 hours') // This will be overridden by extension.yaml
-  .onRun(async (_context): Promise<null> => {
+    memory: '512MiB',
+  },
+  async (event) => {
     try {
       console.log('=== BigQuery to Firestore Sync Started ===');
 
@@ -60,7 +59,6 @@ export const syncBigQueryToFirestore = functions
       }
 
       console.log('=== BigQuery to Firestore Sync Completed Successfully ===');
-      return null;
     } catch (error) {
       console.error('=== BigQuery to Firestore Sync Failed ===');
       console.error('Error:', error);
@@ -68,4 +66,5 @@ export const syncBigQueryToFirestore = functions
       // Re-throw to mark the function execution as failed
       throw error;
     }
-  });
+  }
+);

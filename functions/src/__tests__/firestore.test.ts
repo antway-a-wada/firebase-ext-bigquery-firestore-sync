@@ -2,7 +2,7 @@
  * Tests for firestore module
  */
 
-import * as admin from 'firebase-admin';
+import {ExtensionConfig} from '../config';
 import {
   getLastSyncTimestamp,
   updateSyncState,
@@ -10,7 +10,6 @@ import {
   getAllDocumentIds,
   deleteDocumentsBatch,
 } from '../firestore';
-import {ExtensionConfig} from '../config';
 import {FirestoreDocument} from '../types';
 
 // Mock firebase-admin

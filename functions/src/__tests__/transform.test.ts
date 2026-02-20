@@ -2,8 +2,8 @@
  * Tests for transform module
  */
 
-import {transformRow, transformRows, validateDocument} from '../transform';
 import {ExtensionConfig} from '../config';
+import {transformRow, transformRows, validateDocument} from '../transform';
 import {BigQueryRow} from '../types';
 
 const mockConfig: ExtensionConfig = {
@@ -33,7 +33,7 @@ describe('transformRow', () => {
     expect(result).toEqual({
       id: '123',
       data: {
-        id: '123',
+        id: 123,
         name: 'Test User',
         email: 'test@example.com',
         age: 25,
