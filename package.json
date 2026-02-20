@@ -1,0 +1,24 @@
+{
+  "name": "bigquery-firestore-sync",
+  "version": "0.1.0",
+  "description": "Firebase Extension to sync data from BigQuery to Firestore",
+  "author": "Tsukurioki <support@tsukurioki.jp>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tsukurioki/firebase-ext-bigquery-firestore-sync.git"
+  },
+  "keywords": [
+    "firebase",
+    "firebase-extension",
+    "bigquery",
+    "firestore",
+    "data-sync",
+    "etl"
+  ],
+  "scripts": {
+    "build": "cd functions && npm install && npm run build",
+    "lint": "cd functions && npm run lint",
+    "test": "cd functions && npm run test"
+  }
+}

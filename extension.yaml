@@ -1,0 +1,205 @@
+name: bigquery-firestore-sync
+version: 0.1.0
+specVersion: v1beta
+
+displayName: BigQuery to Firestore Sync
+description: >-
+  Syncs data from BigQuery tables to Firestore collections with incremental updates.
+
+license: Apache-2.0
+
+author:
+  authorName: Tsukurioki
+  url: https://tsukurioki.jp
+
+contributors:
+  - authorName: Tsukurioki Development Team
+
+billingRequired: true
+
+apis:
+  - apiName: bigquery.googleapis.com
+    reason: Required to read data from BigQuery tables
+  - apiName: firestore.googleapis.com
+    reason: Required to write data to Firestore collections
+
+roles:
+  - role: datastore.user
+    reason: Allows the extension to write data to Firestore
+  - role: bigquery.dataViewer
+    reason: Allows the extension to read data from BigQuery
+
+resources:
+  - name: syncBigQueryToFirestore
+    type: firebaseextensions.v1beta.function
+    description: >-
+      Scheduled function that syncs data from BigQuery to Firestore
+    properties:
+      location: ${LOCATION}
+      runtime: nodejs22
+      scheduleTrigger:
+        schedule: ${SYNC_SCHEDULE}
+      availableMemoryMb: 512
+      timeout: 540s
+
+params:
+  - param: LOCATION
+    label: Cloud Functions location
+    description: >-
+      Where do you want to deploy the functions created for this extension?
+      For help selecting a location, refer to the [location selection guide](https://firebase.google.com/docs/functions/locations).
+    type: select
+    options:
+      - label: Iowa (us-central1)
+        value: us-central1
+      - label: South Carolina (us-east1)
+        value: us-east1
+      - label: Northern Virginia (us-east4)
+        value: us-east4
+      - label: Los Angeles (us-west2)
+        value: us-west2
+      - label: Oregon (us-west3)
+        value: us-west3
+      - label: Tokyo (asia-northeast1)
+        value: asia-northeast1
+      - label: Osaka (asia-northeast2)
+        value: asia-northeast2
+      - label: Seoul (asia-northeast3)
+        value: asia-northeast3
+      - label: Hong Kong (asia-east2)
+        value: asia-east2
+      - label: Taiwan (asia-east1)
+        value: asia-east1
+      - label: Singapore (asia-southeast1)
+        value: asia-southeast1
+      - label: Jakarta (asia-southeast2)
+        value: asia-southeast2
+      - label: Mumbai (asia-south1)
+        value: asia-south1
+      - label: Belgium (europe-west1)
+        value: europe-west1
+      - label: London (europe-west2)
+        value: europe-west2
+      - label: Frankfurt (europe-west3)
+        value: europe-west3
+      - label: Zurich (europe-west6)
+        value: europe-west6
+    default: us-central1
+    required: true
+    immutable: true
+
+  - param: BIGQUERY_PROJECT_ID
+    label: BigQuery project ID
+    description: >-
+      The Google Cloud project ID where your BigQuery table is located.
+      Leave empty to use the same project as your Firebase project.
+    type: string
+    default: ${PROJECT_ID}
+    required: false
+
+  - param: BIGQUERY_DATASET
+    label: BigQuery dataset
+    description: >-
+      The dataset ID containing the table you want to sync.
+    type: string
+    example: my_dataset
+    required: true
+
+  - param: BIGQUERY_TABLE
+    label: BigQuery table
+    description: >-
+      The table name you want to sync to Firestore.
+    type: string
+    example: my_table
+    required: true
+
+  - param: FIRESTORE_COLLECTION_PATH
+    label: Firestore collection path
+    description: >-
+      The Firestore collection path where data will be synced.
+      You can use subcollections with forward slashes (e.g., "users/{userId}/orders").
+    type: string
+    example: my_collection
+    required: true
+
+  - param: PRIMARY_KEY_COLUMN
+    label: Primary key column name
+    description: >-
+      The BigQuery column name to use as the Firestore document ID.
+      This should be a unique identifier for each row.
+    type: string
+    example: id
+    required: true
+
+  - param: TIMESTAMP_COLUMN
+    label: Timestamp column name
+    description: >-
+      The BigQuery column name containing the last update timestamp.
+      Used for incremental sync to detect changes since last sync.
+    type: string
+    example: updated_at
+    required: true
+
+  - param: SYNC_SCHEDULE
+    label: Sync schedule
+    description: >-
+      The frequency at which to sync data, specified in Cron format.
+      For example, "0 * * * *" runs every hour, "0 0 * * *" runs daily at midnight.
+    type: string
+    example: "0 * * * *"
+    default: "0 * * * *"
+    required: true
+
+  - param: ENABLE_DELETE_SYNC
+    label: Enable delete synchronization
+    description: >-
+      If enabled, documents in Firestore that no longer exist in BigQuery will be deleted.
+      Warning: This performs a full table scan periodically and may incur additional costs.
+    type: select
+    options:
+      - label: Enabled
+        value: true
+      - label: Disabled
+        value: false
+    default: false
+    required: true
+
+  - param: DELETE_SYNC_SCHEDULE
+    label: Delete sync schedule
+    description: >-
+      The frequency at which to check for deleted records, specified in Cron format.
+      Only used if delete synchronization is enabled. Should be less frequent than SYNC_SCHEDULE.
+    type: string
+    example: "0 0 * * *"
+    default: "0 0 * * *"
+    required: false
+
+  - param: BATCH_SIZE
+    label: Batch size
+    description: >-
+      Number of documents to process in each batch. Maximum is 500 due to Firestore limits.
+    type: string
+    example: "500"
+    default: "500"
+    required: true
+    validationRegex: "^([1-9][0-9]{0,2}|500)$"
+    validationErrorMessage: Batch size must be between 1 and 500.
+
+  - param: FIELD_MAPPING
+    label: Field mapping (JSON)
+    description: >-
+      Optional JSON object to map BigQuery column names to Firestore field names.
+      Example: {"bigquery_column": "firestoreField", "another_column": "anotherField"}
+      Leave empty to use the same field names.
+    type: string
+    example: '{"created_at": "createdAt", "updated_at": "updatedAt"}'
+    required: false
+
+  - param: EXCLUDE_FIELDS
+    label: Exclude fields (comma-separated)
+    description: >-
+      Optional comma-separated list of BigQuery column names to exclude from sync.
+      Example: internal_id,temp_field
+    type: string
+    example: internal_id,temp_field
+    required: false
