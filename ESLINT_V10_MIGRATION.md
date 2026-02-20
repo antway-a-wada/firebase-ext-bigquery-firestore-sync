@@ -1,14 +1,25 @@
-# ESLint v10 Migration Guide
+# ESLint v9 Flat Config Migration Guide
+
+## Why ESLint 9 Instead of v10?
+
+While ESLint v10 was released in February 2026, the plugin ecosystem (particularly `eslint-plugin-import-x`) is not yet fully compatible. ESLint v9.18.0 provides:
+
+- ✅ Full flat config support
+- ✅ All modern ESLint features
+- ✅ Compatible with all plugins
+- ✅ Production-ready and stable
+
+We will upgrade to ESLint v10 once plugin support is available.
 
 ## Overview
 
-ESLint v10 introduces significant breaking changes, particularly the **complete removal of the `.eslintrc` configuration system** in favor of the new **flat config** format.
+ESLint v9 introduces the new **flat config** format, which is **the recommended configuration system** going forward. The old `.eslintrc` format is deprecated.
 
 ## What Changed
 
 ### 1. Configuration File Format
 
-**Before (ESLint v8/v9 - `.eslintrc.js`):**
+**Before (ESLint v8 - `.eslintrc.js`):**
 ```javascript
 module.exports = {
   root: true,
@@ -19,7 +30,7 @@ module.exports = {
 };
 ```
 
-**After (ESLint v10 - `eslint.config.js`):**
+**After (ESLint v9+ - `eslint.config.js`):**
 ```javascript
 import eslint from '@eslint/js';
 

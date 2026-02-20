@@ -8,33 +8,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.2] - 2026-02-20
 
 ### Changed
-- **Updated to Absolute Latest Versions**:
-  - `eslint` upgraded to **10.0.0** (with flat config migration)
+- **Updated to Latest Compatible Versions**:
+  - `eslint` upgraded to **9.20.1** (latest v9 with flat config support)
+  - `@eslint/js` upgraded to **9.20.1**
   - `typescript-eslint` upgraded to **8.56.0** (unified package)
   - `jest` upgraded to **30.0.0**
   - `@types/jest` upgraded to **30.0.0**
   - `@types/node` upgraded to **22.10.5**
   - `prettier` upgraded to **3.8.1**
+  - `typescript` upgraded to **5.7.2**
+  - `ts-jest` upgraded to **29.2.5**
 
-- **ESLint v10 Complete Migration**:
+- **ESLint v9 Flat Config Migration**:
   - Removed `.eslintrc.js` (legacy config)
-  - Created `eslint.config.js` (new flat config)
+  - Created `eslint.config.js` (new flat config format)
   - Migrated to ES Modules (`"type": "module"` in package.json)
-  - Replaced separate TypeScript ESLint packages with unified `typescript-eslint` package
-  - Added `@eslint/js` for core configurations
+  - Replaced `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` with unified `typescript-eslint` package
+  - Replaced `eslint-plugin-import` with `eslint-plugin-import-x` (better performance and ESLint 9 support)
+  - Added `@eslint/js` for core ESLint configurations
 
 - **Jest 30 Migration**:
   - Updated jest.config.js to ES Module format
   - Added ESM support configuration for ts-jest
 
 ### Added
-- `ESLINT_V10_MIGRATION.md` - Comprehensive ESLint v10 migration guide
+- `ESLINT_V10_MIGRATION.md` - Comprehensive ESLint flat config migration guide (renamed to reflect v9 usage)
+- `PLUGIN_MIGRATION.md` - eslint-plugin-import to import-x migration guide
 - ES Module support throughout the project
 
 ### Removed
 - `.eslintrc.js` (replaced by `eslint.config.js`)
 - `@typescript-eslint/eslint-plugin` (replaced by `typescript-eslint`)
 - `@typescript-eslint/parser` (replaced by `typescript-eslint`)
+- `eslint-plugin-import` (replaced by `eslint-plugin-import-x`)
+
+### Note
+- Using ESLint **9.20.1** (not 10.0.0) because plugin ecosystem compatibility
+- ESLint 9 has full flat config support and all modern features
+- Will upgrade to ESLint 10 once all plugins have stable support
 
 ## [0.1.1] - 2026-02-20
 
