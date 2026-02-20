@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESLint v10 Migration**:
   - Migrated from `.eslintrc.js` to `eslint.config.js` (flat config)
   - Replaced `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` with unified `typescript-eslint` package
+  - Replaced `eslint-plugin-import` with `eslint-plugin-import-x` (ESLint 10 compatible)
   - Added `@eslint/js` for core ESLint configurations
   - Updated package.json to use ES Modules (`"type": "module"`)
 

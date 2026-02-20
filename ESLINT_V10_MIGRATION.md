@@ -142,17 +142,22 @@ Plugins are now explicit imports:
 
 ```javascript
 import tseslint from 'typescript-eslint';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 
 export default [
   {
     plugins: {
       '@typescript-eslint': tseslint.plugin,
-      'import': importPlugin
+      'import-x': importPlugin
     }
   }
 ];
 ```
+
+**Note:** We use `eslint-plugin-import-x` instead of `eslint-plugin-import` because:
+- `eslint-plugin-import` doesn't support ESLint 10 yet
+- `eslint-plugin-import-x` is a modern fork with ESLint 10 support
+- It offers better performance and smaller dependencies
 
 ## New Features in v10
 
@@ -225,16 +230,21 @@ npm install
 
 ### Issue: Import plugin not working
 
-**Cause:** Plugin not properly registered
+**Cause:** Using old `eslint-plugin-import` which doesn't support ESLint 10
 
-**Solution:** Ensure plugin is imported and added to plugins object:
+**Solution:** Use `eslint-plugin-import-x` instead:
 ```javascript
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 
 export default [
   {
     plugins: {
-      'import': importPlugin
+      'import-x': importPlugin
+    },
+    rules: {
+      'import-x/order': ['error', { ... }],
+      'import-x/newline-after-import': 'error',
+      'import-x/no-duplicates': 'error'
     }
   }
 ];
