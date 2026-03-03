@@ -2,12 +2,12 @@
  * Firestore operations for the extension
  */
 
-import * as admin from 'firebase-admin';
+import * as admin from 'firebase-admin'
 
-import {ExtensionConfig} from './config';
-import {FirestoreDocument, SyncState} from './types';
+import {ExtensionConfig} from './config'
+import {FirestoreDocument, SyncState} from './types'
 
-const SYNC_STATE_COLLECTION = '_bigquery_firestore_sync_state';
+const SYNC_STATE_COLLECTION = '_bigquery_firestore_sync_state'
 
 /**
  * Get the last sync timestamp from Firestore
@@ -19,15 +19,15 @@ export async function getLastSyncTimestamp(
   const stateDoc = await db
     .collection(SYNC_STATE_COLLECTION)
     .doc(config.firestoreCollectionPath.replace(/\//g, '_'))
-    .get();
+    .get()
 
   if (!stateDoc.exists) {
-    console.log('No previous sync state found. This is the initial sync.');
-    return null;
+    console.log('No previous sync state found. This is the initial sync.')
+    return null
   }
 
-  const state = stateDoc.data() as SyncState;
-  return state.lastSyncTimestamp ? new Date(state.lastSyncTimestamp) : null;
+  const state = stateDoc.data() as SyncState
+  return state.lastSyncTimestamp ? new Date(state.lastSyncTimestamp) : null
 }
 
 /**
@@ -42,21 +42,21 @@ export async function updateSyncState(
 ): Promise<void> {
   const stateRef = db
     .collection(SYNC_STATE_COLLECTION)
-    .doc(config.firestoreCollectionPath.replace(/\//g, '_'));
+    .doc(config.firestoreCollectionPath.replace(/\//g, '_'))
 
   const updateData: Partial<SyncState> = {
     lastSyncTimestamp: timestamp,
     totalDocumentsSynced: totalSynced,
-  };
-
-  if (!error) {
-    updateData.lastSuccessfulSync = new Date();
-  } else {
-    updateData.lastError = error;
   }
 
-  await stateRef.set(updateData, {merge: true});
-  console.log('Sync state updated:', updateData);
+  if (!error) {
+    updateData.lastSuccessfulSync = new Date()
+  } else {
+    updateData.lastError = error
+  }
+
+  await stateRef.set(updateData, {merge: true})
+  console.log('Sync state updated:', updateData)
 }
 
 /**
@@ -67,44 +67,44 @@ export async function writeDocumentsBatch(
   config: ExtensionConfig,
   documents: FirestoreDocument[]
 ): Promise<{created: number; updated: number; errors: number}> {
-  let created = 0;
-  let updated = 0;
-  let errors = 0;
+  let created = 0
+  let updated = 0
+  let errors = 0
 
   // Split documents into batches of config.batchSize
   for (let i = 0; i < documents.length; i += config.batchSize) {
-    const batch = db.batch();
-    const batchDocs = documents.slice(i, i + config.batchSize);
+    const batch = db.batch()
+    const batchDocs = documents.slice(i, i + config.batchSize)
 
     for (const doc of batchDocs) {
       try {
-        const docRef = db.collection(config.firestoreCollectionPath).doc(doc.id);
-        
+        const docRef = db.collection(config.firestoreCollectionPath).doc(doc.id)
+
         // Check if document exists to track created vs updated
-        const existing = await docRef.get();
+        const existing = await docRef.get()
         if (existing.exists) {
-          updated++;
+          updated++
         } else {
-          created++;
+          created++
         }
 
-        batch.set(docRef, doc.data, {merge: true});
+        batch.set(docRef, doc.data, {merge: true})
       } catch (error) {
-        console.error('Error preparing document for batch:', doc.id, error);
-        errors++;
+        console.error('Error preparing document for batch:', doc.id, error)
+        errors++
       }
     }
 
     try {
-      await batch.commit();
-      console.log(`Batch committed: ${batchDocs.length} documents`);
+      await batch.commit()
+      console.log(`Batch committed: ${batchDocs.length} documents`)
     } catch (error) {
-      console.error('Error committing batch:', error);
-      errors += batchDocs.length;
+      console.error('Error committing batch:', error)
+      errors += batchDocs.length
     }
   }
 
-  return {created, updated, errors};
+  return {created, updated, errors}
 }
 
 /**
@@ -114,18 +114,18 @@ export async function getAllDocumentIds(
   db: admin.firestore.Firestore,
   config: ExtensionConfig
 ): Promise<Set<string>> {
-  const ids = new Set<string>();
-  const collectionRef = db.collection(config.firestoreCollectionPath);
+  const ids = new Set<string>()
+  const collectionRef = db.collection(config.firestoreCollectionPath)
 
-  const query = collectionRef.select();
-  const snapshot = await query.get();
+  const query = collectionRef.select()
+  const snapshot = await query.get()
 
-  snapshot.docs.forEach(doc => {
-    ids.add(doc.id);
-  });
+  snapshot.docs.forEach((doc) => {
+    ids.add(doc.id)
+  })
 
-  console.log(`Found ${ids.size} documents in Firestore collection`);
-  return ids;
+  console.log(`Found ${ids.size} documents in Firestore collection`)
+  return ids
 }
 
 /**
@@ -136,26 +136,26 @@ export async function deleteDocumentsBatch(
   config: ExtensionConfig,
   documentIds: string[]
 ): Promise<number> {
-  let deleted = 0;
+  let deleted = 0
 
   // Split document IDs into batches of config.batchSize
   for (let i = 0; i < documentIds.length; i += config.batchSize) {
-    const batch = db.batch();
-    const batchIds = documentIds.slice(i, i + config.batchSize);
+    const batch = db.batch()
+    const batchIds = documentIds.slice(i, i + config.batchSize)
 
     for (const id of batchIds) {
-      const docRef = db.collection(config.firestoreCollectionPath).doc(id);
-      batch.delete(docRef);
+      const docRef = db.collection(config.firestoreCollectionPath).doc(id)
+      batch.delete(docRef)
     }
 
     try {
-      await batch.commit();
-      deleted += batchIds.length;
-      console.log(`Deleted batch: ${batchIds.length} documents`);
+      await batch.commit()
+      deleted += batchIds.length
+      console.log(`Deleted batch: ${batchIds.length} documents`)
     } catch (error) {
-      console.error('Error deleting batch:', error);
+      console.error('Error deleting batch:', error)
     }
   }
 
-  return deleted;
+  return deleted
 }

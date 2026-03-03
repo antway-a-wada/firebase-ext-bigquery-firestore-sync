@@ -3,16 +3,16 @@
  */
 
 export interface ExtensionConfig {
-  bigqueryProjectId: string;
-  bigqueryDataset: string;
-  bigqueryTable: string;
-  firestoreCollectionPath: string;
-  primaryKeyColumn: string;
-  timestampColumn: string;
-  enableDeleteSync: boolean;
-  batchSize: number;
-  fieldMapping: Record<string, string>;
-  excludeFields: string[];
+  bigqueryProjectId: string
+  bigqueryDataset: string
+  bigqueryTable: string
+  firestoreCollectionPath: string
+  primaryKeyColumn: string
+  timestampColumn: string
+  enableDeleteSync: boolean
+  batchSize: number
+  fieldMapping: Record<string, string>
+  excludeFields: string[]
 }
 
 /**
@@ -20,19 +20,19 @@ export interface ExtensionConfig {
  */
 function parseFieldMapping(mappingStr: string | undefined): Record<string, string> {
   if (!mappingStr || mappingStr.trim() === '') {
-    return {};
+    return {}
   }
 
   try {
-    const parsed = JSON.parse(mappingStr) as unknown;
+    const parsed = JSON.parse(mappingStr) as unknown
     if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-      console.warn('FIELD_MAPPING must be a JSON object. Using empty mapping.');
-      return {};
+      console.warn('FIELD_MAPPING must be a JSON object. Using empty mapping.')
+      return {}
     }
-    return parsed as Record<string, string>;
+    return parsed as Record<string, string>
   } catch (error) {
-    console.error('Failed to parse FIELD_MAPPING:', error);
-    return {};
+    console.error('Failed to parse FIELD_MAPPING:', error)
+    return {}
   }
 }
 
@@ -41,13 +41,13 @@ function parseFieldMapping(mappingStr: string | undefined): Record<string, strin
  */
 function parseExcludeFields(excludeStr: string | undefined): string[] {
   if (!excludeStr || excludeStr.trim() === '') {
-    return [];
+    return []
   }
 
   return excludeStr
     .split(',')
     .map((field) => field.trim())
-    .filter((field) => field.length > 0);
+    .filter((field) => field.length > 0)
 }
 
 /**
@@ -60,11 +60,11 @@ export function loadConfig(): ExtensionConfig {
     'FIRESTORE_COLLECTION_PATH',
     'PRIMARY_KEY_COLUMN',
     'TIMESTAMP_COLUMN',
-  ];
+  ]
 
   for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
-      throw new Error(`Required environment variable ${envVar} is not set`);
+      throw new Error(`Required environment variable ${envVar} is not set`)
     }
   }
 
@@ -79,11 +79,11 @@ export function loadConfig(): ExtensionConfig {
     batchSize: parseInt(process.env.BATCH_SIZE ?? '500', 10),
     fieldMapping: parseFieldMapping(process.env.FIELD_MAPPING),
     excludeFields: parseExcludeFields(process.env.EXCLUDE_FIELDS),
-  };
-
-  if (config.batchSize < 1 || config.batchSize > 500) {
-    throw new Error('BATCH_SIZE must be between 1 and 500');
   }
 
-  return config;
+  if (config.batchSize < 1 || config.batchSize > 500) {
+    throw new Error('BATCH_SIZE must be between 1 and 500')
+  }
+
+  return config
 }

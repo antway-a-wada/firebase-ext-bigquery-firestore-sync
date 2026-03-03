@@ -22,7 +22,7 @@ export type CloudLogSeverity =
  * @returns クラス名（取得できない場合は 'Unknown'）
  */
 export function getClassName(instance: object): string {
-  const ctor = (instance as { constructor?: { name?: string } }).constructor
+  const ctor = (instance as {constructor?: {name?: string}}).constructor
   return ctor?.name ?? 'Unknown'
 }
 
@@ -50,7 +50,7 @@ export function getFunctionName(fn: unknown): string {
  */
 export function logDebug(
   message: string,
-  options?: { details?: string; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; additionalPayload?: Record<string, unknown>}
 ): void {
   if (process.env.NODE_ENV === 'development' || process.env.APP_ENV === 'develop') {
     const payload = getPayload('DEBUG', message, options)
@@ -69,7 +69,7 @@ export function logDebug(
  */
 export function logInfo(
   message: string,
-  options?: { details?: string; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; additionalPayload?: Record<string, unknown>}
 ): void {
   const payload = getPayload('INFO', message, options)
   console.info(JSON.stringify(payload))
@@ -86,7 +86,7 @@ export function logInfo(
  */
 export function logNotice(
   message: string,
-  options?: { details?: string; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; additionalPayload?: Record<string, unknown>}
 ): void {
   const payload = getPayload('NOTICE', message, options)
   console.log(JSON.stringify(payload))
@@ -104,7 +104,7 @@ export function logNotice(
  */
 export function logWarning(
   message: string,
-  options?: { details?: string; error?: Error; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; error?: Error; additionalPayload?: Record<string, unknown>}
 ): void {
   const payload = getPayload('WARNING', message, options)
   console.warn(JSON.stringify(payload))
@@ -122,7 +122,7 @@ export function logWarning(
  */
 export function logError(
   message: string,
-  options?: { details?: string; error?: Error; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; error?: Error; additionalPayload?: Record<string, unknown>}
 ): void {
   const payload = getPayload('ERROR', message, options)
   console.error(JSON.stringify(payload))
@@ -142,7 +142,7 @@ export function logError(
  */
 export function logAlert(
   message: string,
-  options?: { details?: string; error?: Error; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; error?: Error; additionalPayload?: Record<string, unknown>}
 ): void {
   const payload = getPayload('ALERT', message, options)
   console.error(JSON.stringify(payload))
@@ -151,9 +151,9 @@ export function logAlert(
 function getPayload(
   severity: CloudLogSeverity,
   message: string,
-  options?: { details?: string; error?: Error; additionalPayload?: Record<string, unknown> }
+  options?: {details?: string; error?: Error; additionalPayload?: Record<string, unknown>}
 ): Record<string, unknown> {
-  const payload: Record<string, unknown> = { severity, message }
+  const payload: Record<string, unknown> = {severity, message}
   if (options?.details) {
     payload.details = options.details
   }

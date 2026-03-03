@@ -60,7 +60,7 @@ export async function performIncrementalSync(
     console.log(`Transformed ${documents.length} documents`)
 
     // Validate documents
-    const validDocuments = documents.filter(doc => validateDocument(doc))
+    const validDocuments = documents.filter((doc) => validateDocument(doc))
     console.log(`${validDocuments.length} documents passed validation`)
 
     if (validDocuments.length === 0) {
