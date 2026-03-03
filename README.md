@@ -8,14 +8,30 @@
 
 ## 🧩 Install this extension
 
-### Console
-
-[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")](https://console.firebase.google.com/project/_/extensions/install?ref=tsukurioki/bigquery-firestore-sync)
-
-### Firebase CLI
+### ローカルからインストール（プライベート使用）
 
 ```bash
-firebase ext:install tsukurioki/bigquery-firestore-sync --project=projectId-here
+# リポジトリをクローン
+git clone https://github.com/antway-a-wada/firebase-ext-bigquery-firestore-sync.git
+cd firebase-ext-bigquery-firestore-sync
+
+# Firebaseプロジェクトを選択
+firebase use <your-project-id>
+
+# ローカルからインストール
+firebase ext:install . --project=<your-project-id>
+```
+
+### 公開後のインストール（将来的に公開する場合）
+
+公開後は以下の方法でインストール可能になります：
+
+#### Console
+[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")](https://console.firebase.google.com/project/_/extensions/install?ref=antway-a-wada/bigquery-firestore-sync)
+
+#### Firebase CLI
+```bash
+firebase ext:install antway-a-wada/bigquery-firestore-sync --project=projectId-here
 ```
 
 ---
@@ -255,14 +271,30 @@ Made with ❤️ by Tsukurioki
 
 ## 🧩 この拡張機能をインストール
 
-### コンソール
-
-[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")](https://console.firebase.google.com/project/_/extensions/install?ref=tsukurioki/bigquery-firestore-sync)
-
-### Firebase CLI
+### ローカルからインストール（プライベート使用）
 
 ```bash
-firebase ext:install tsukurioki/bigquery-firestore-sync --project=projectId-here
+# リポジトリをクローン
+git clone https://github.com/antway-a-wada/firebase-ext-bigquery-firestore-sync.git
+cd firebase-ext-bigquery-firestore-sync
+
+# Firebaseプロジェクトを選択
+firebase use <your-project-id>
+
+# ローカルからインストール
+firebase ext:install . --project=<your-project-id>
+```
+
+### 公開後のインストール（将来的に公開する場合）
+
+公開後は以下の方法でインストール可能になります：
+
+#### コンソール
+[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")](https://console.firebase.google.com/project/_/extensions/install?ref=antway-a-wada/bigquery-firestore-sync)
+
+#### Firebase CLI
+```bash
+firebase ext:install antway-a-wada/bigquery-firestore-sync --project=projectId-here
 ```
 
 ---
