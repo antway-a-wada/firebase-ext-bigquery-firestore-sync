@@ -8,6 +8,7 @@
 import * as admin from 'firebase-admin'
 import {onSchedule} from 'firebase-functions/v2/scheduler'
 
+import {logInfo, logError} from './cloudLogger'
 import {loadConfig} from './config'
 import {performIncrementalSync, performDeleteSync} from './sync'
 
@@ -25,17 +26,19 @@ export const syncBigQueryToFirestore = onSchedule(
   },
   async () => {
     try {
-      console.log('=== BigQuery to Firestore Sync Started ===')
+      logInfo('BigQuery to Firestore Sync Started')
 
       // Load configuration
       const config = loadConfig()
-      console.log('Configuration loaded:', {
-        bigQueryTable: `${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}`,
-        firestoreCollection: config.firestoreCollectionPath,
-        primaryKey: config.primaryKeyColumn,
-        timestampColumn: config.timestampColumn,
-        batchSize: config.batchSize,
-        deleteSync: config.enableDeleteSync,
+      logInfo('Configuration loaded', {
+        additionalPayload: {
+          bigQueryTable: `${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}`,
+          firestoreCollection: config.firestoreCollectionPath,
+          primaryKey: config.primaryKeyColumn,
+          timestampColumn: config.timestampColumn,
+          batchSize: config.batchSize,
+          deleteSync: config.enableDeleteSync,
+        },
       })
 
       const db = admin.firestore()
@@ -43,25 +46,28 @@ export const syncBigQueryToFirestore = onSchedule(
       // Perform incremental sync
       const stats = await performIncrementalSync(db, config)
 
-      console.log('Sync statistics:', {
-        created: stats.documentsCreated,
-        updated: stats.documentsUpdated,
-        deleted: stats.documentsDeleted,
-        errors: stats.errors,
-        duration: stats.endTime.getTime() - stats.startTime.getTime(),
+      logInfo('Sync statistics', {
+        additionalPayload: {
+          created: stats.documentsCreated,
+          updated: stats.documentsUpdated,
+          deleted: stats.documentsDeleted,
+          errors: stats.errors,
+          duration: stats.endTime.getTime() - stats.startTime.getTime(),
+        },
       })
 
       // Perform delete sync if enabled
       if (config.enableDeleteSync) {
-        console.log('Delete sync is enabled. Starting delete synchronization...')
+        logInfo('Delete sync is enabled. Starting delete synchronization...')
         const deletedCount = await performDeleteSync(db, config)
-        console.log(`Delete sync completed. Deleted ${deletedCount} documents.`)
+        logInfo(`Delete sync completed. Deleted ${deletedCount} documents.`)
       }
 
-      console.log('=== BigQuery to Firestore Sync Completed Successfully ===')
+      logInfo('BigQuery to Firestore Sync Completed Successfully')
     } catch (error) {
-      console.error('=== BigQuery to Firestore Sync Failed ===')
-      console.error('Error:', error)
+      logError('BigQuery to Firestore Sync Failed', {
+        error: error instanceof Error ? error : new Error(String(error)),
+      })
 
       // Re-throw to mark the function execution as failed
       throw error

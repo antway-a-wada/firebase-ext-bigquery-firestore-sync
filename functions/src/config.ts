@@ -2,6 +2,8 @@
  * Extension configuration loaded from environment variables
  */
 
+import {logWarning, logError} from './cloudLogger'
+
 export interface ExtensionConfig {
   bigqueryProjectId: string
   bigqueryDataset: string
@@ -26,12 +28,14 @@ function parseFieldMapping(mappingStr: string | undefined): Record<string, strin
   try {
     const parsed = JSON.parse(mappingStr) as unknown
     if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-      console.warn('FIELD_MAPPING must be a JSON object. Using empty mapping.')
+      logWarning('FIELD_MAPPING must be a JSON object. Using empty mapping.')
       return {}
     }
     return parsed as Record<string, string>
   } catch (error) {
-    console.error('Failed to parse FIELD_MAPPING:', error)
+    logError('Failed to parse FIELD_MAPPING', {
+      error: error instanceof Error ? error : new Error(String(error)),
+    })
     return {}
   }
 }

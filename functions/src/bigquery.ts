@@ -4,6 +4,7 @@
 
 import {BigQuery} from '@google-cloud/bigquery'
 
+import {logInfo} from './cloudLogger'
 import {ExtensionConfig} from './config'
 import {BigQueryRow} from './types'
 
@@ -33,14 +34,14 @@ export async function queryUpdatedRecords(
     ORDER BY ${config.timestampColumn} ASC
   `
 
-  console.log('Executing BigQuery query:', query)
+  logInfo('Executing BigQuery query', {additionalPayload: {query}})
 
   const [job] = await bigquery.createQueryJob({
     query,
     location: 'US',
   })
 
-  console.log(`BigQuery job ${job.id ?? 'unknown'} started.`)
+  logInfo('BigQuery job started', {additionalPayload: {jobId: job.id ?? 'unknown'}})
 
   const [rows] = await job.getQueryResults()
 
@@ -49,7 +50,12 @@ export async function queryUpdatedRecords(
     | {statistics?: {query?: {totalBytesProcessed?: string}}}
     | undefined
   const bytesProcessed = metadata?.statistics?.query?.totalBytesProcessed
-  console.log(`Query completed. Rows: ${rows.length}, Bytes processed: ${bytesProcessed ?? 'N/A'}`)
+  logInfo('Query completed', {
+    additionalPayload: {
+      rowCount: rows.length,
+      bytesProcessed: bytesProcessed ?? 'N/A',
+    },
+  })
 
   return rows as BigQueryRow[]
 }
@@ -70,7 +76,7 @@ export async function queryAllDocumentIds(config: ExtensionConfig): Promise<Set<
     FROM ${tableRef}
   `
 
-  console.log('Querying all document IDs from BigQuery')
+  logInfo('Querying all document IDs from BigQuery')
 
   const [job] = await bigquery.createQueryJob({
     query,
@@ -88,7 +94,7 @@ export async function queryAllDocumentIds(config: ExtensionConfig): Promise<Set<
     }
   }
 
-  console.log(`Found ${ids.size} document IDs in BigQuery`)
+  logInfo('Found document IDs in BigQuery', {additionalPayload: {count: ids.size}})
   return ids
 }
 

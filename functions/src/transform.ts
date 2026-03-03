@@ -2,6 +2,7 @@
  * Data transformation utilities for BigQuery to Firestore conversion
  */
 
+import {logInfo, logWarning, logError} from './cloudLogger'
 import {ExtensionConfig} from './config'
 import {BigQueryRow, FirestoreDocument} from './types'
 
@@ -88,7 +89,7 @@ export function transformRow(row: BigQueryRow, config: ExtensionConfig): Firesto
     const primaryKeyValue: unknown = row[config.primaryKeyColumn]
 
     if (primaryKeyValue === undefined || primaryKeyValue === null) {
-      console.warn('Row missing primary key:', config.primaryKeyColumn)
+      logWarning('Row missing primary key', {details: config.primaryKeyColumn})
       return null
     }
 
@@ -127,7 +128,10 @@ export function transformRow(row: BigQueryRow, config: ExtensionConfig): Firesto
       data,
     }
   } catch (error) {
-    console.error('Error transforming row:', error, row)
+    logError('Error transforming row', {
+      error: error instanceof Error ? error : new Error(String(error)),
+      additionalPayload: {row},
+    })
     return null
   }
 }
@@ -145,7 +149,12 @@ export function transformRows(rows: BigQueryRow[], config: ExtensionConfig): Fir
     }
   }
 
-  console.log(`Transformed ${documents.length} out of ${rows.length} rows`)
+  logInfo('Transformation completed', {
+    additionalPayload: {
+      transformedCount: documents.length,
+      totalRows: rows.length,
+    },
+  })
   return documents
 }
 
@@ -155,13 +164,13 @@ export function transformRows(rows: BigQueryRow[], config: ExtensionConfig): Fir
 export function validateDocument(doc: FirestoreDocument): boolean {
   // Firestore document ID must not be empty
   if (!doc.id || doc.id.trim() === '') {
-    console.warn('Invalid document: empty ID')
+    logWarning('Invalid document: empty ID')
     return false
   }
 
   // Firestore document ID must not contain '/'
   if (doc.id.includes('/')) {
-    console.warn('Invalid document: ID contains "/":', doc.id)
+    logWarning('Invalid document: ID contains "/"', {details: doc.id})
     return false
   }
 
@@ -169,7 +178,10 @@ export function validateDocument(doc: FirestoreDocument): boolean {
   const docSize = JSON.stringify(doc.data).length
   if (docSize > 1000000) {
     // 1 MB limit
-    console.warn('Document too large:', doc.id, docSize, 'bytes')
+    logWarning('Document too large', {
+      details: doc.id,
+      additionalPayload: {sizeBytes: docSize},
+    })
     return false
   }
 

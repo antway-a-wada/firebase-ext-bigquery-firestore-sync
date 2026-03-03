@@ -4,6 +4,7 @@
 
 import * as admin from 'firebase-admin'
 
+import {logInfo, logError} from './cloudLogger'
 import {ExtensionConfig} from './config'
 import {FirestoreDocument, SyncState} from './types'
 
@@ -22,7 +23,7 @@ export async function getLastSyncTimestamp(
     .get()
 
   if (!stateDoc.exists) {
-    console.log('No previous sync state found. This is the initial sync.')
+    logInfo('No previous sync state found. This is the initial sync.')
     return null
   }
 
@@ -56,7 +57,7 @@ export async function updateSyncState(
   }
 
   await stateRef.set(updateData, {merge: true})
-  console.log('Sync state updated:', updateData)
+  logInfo('Sync state updated', {additionalPayload: updateData})
 }
 
 /**
@@ -124,7 +125,7 @@ export async function getAllDocumentIds(
     ids.add(doc.id)
   })
 
-  console.log(`Found ${ids.size} documents in Firestore collection`)
+  logInfo('Found documents in Firestore collection', {additionalPayload: {count: ids.size}})
   return ids
 }
 
@@ -151,9 +152,11 @@ export async function deleteDocumentsBatch(
     try {
       await batch.commit()
       deleted += batchIds.length
-      console.log(`Deleted batch: ${batchIds.length} documents`)
+      logInfo('Deleted batch', {additionalPayload: {documentCount: batchIds.length}})
     } catch (error) {
-      console.error('Error deleting batch:', error)
+      logError('Error deleting batch', {
+        error: error instanceof Error ? error : new Error(String(error)),
+      })
     }
   }
 

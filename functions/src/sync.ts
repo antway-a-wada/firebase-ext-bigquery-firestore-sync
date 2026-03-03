@@ -5,6 +5,7 @@
 import * as admin from 'firebase-admin'
 
 import {queryUpdatedRecords, queryAllDocumentIds} from './bigquery'
+import {logInfo, logError} from './cloudLogger'
 import {ExtensionConfig} from './config'
 import {
   getLastSyncTimestamp,
@@ -33,23 +34,27 @@ export async function performIncrementalSync(
   }
 
   try {
-    console.log('Starting incremental sync...')
-    console.log('Configuration:', {
-      dataset: config.bigqueryDataset,
-      table: config.bigqueryTable,
-      collection: config.firestoreCollectionPath,
+    logInfo('Starting incremental sync')
+    logInfo('Configuration', {
+      additionalPayload: {
+        dataset: config.bigqueryDataset,
+        table: config.bigqueryTable,
+        collection: config.firestoreCollectionPath,
+      },
     })
 
     // Get last sync timestamp
     const lastSyncTimestamp = await getLastSyncTimestamp(db, config)
-    console.log('Last sync timestamp:', lastSyncTimestamp?.toISOString() ?? 'None (initial sync)')
+    logInfo('Last sync timestamp', {
+      details: lastSyncTimestamp?.toISOString() ?? 'None (initial sync)',
+    })
 
     // Query BigQuery for updated records
     const rows = await queryUpdatedRecords(config, lastSyncTimestamp)
-    console.log(`Retrieved ${rows.length} rows from BigQuery`)
+    logInfo('Retrieved rows from BigQuery', {additionalPayload: {rowCount: rows.length}})
 
     if (rows.length === 0) {
-      console.log('No new or updated records found.')
+      logInfo('No new or updated records found')
       await updateSyncState(db, config, new Date(), 0)
       stats.endTime = new Date()
       return stats
@@ -57,14 +62,14 @@ export async function performIncrementalSync(
 
     // Transform rows to Firestore documents
     const documents = transformRows(rows, config)
-    console.log(`Transformed ${documents.length} documents`)
+    logInfo('Transformed documents', {additionalPayload: {documentCount: documents.length}})
 
     // Validate documents
     const validDocuments = documents.filter((doc) => validateDocument(doc))
-    console.log(`${validDocuments.length} documents passed validation`)
+    logInfo('Documents passed validation', {additionalPayload: {validCount: validDocuments.length}})
 
     if (validDocuments.length === 0) {
-      console.log('No valid documents to sync.')
+      logInfo('No valid documents to sync')
       await updateSyncState(db, config, new Date(), 0)
       stats.endTime = new Date()
       return stats
@@ -76,7 +81,7 @@ export async function performIncrementalSync(
     stats.documentsUpdated = writeResult.updated
     stats.errors = writeResult.errors
 
-    console.log('Write completed:', writeResult)
+    logInfo('Write completed', {additionalPayload: writeResult})
 
     // Update sync state
     const currentTimestamp = new Date()
@@ -89,11 +94,20 @@ export async function performIncrementalSync(
     )
 
     stats.endTime = new Date()
-    console.log('Incremental sync completed:', stats)
+    logInfo('Incremental sync completed', {
+      additionalPayload: {
+        documentsCreated: stats.documentsCreated,
+        documentsUpdated: stats.documentsUpdated,
+        documentsDeleted: stats.documentsDeleted,
+        errors: stats.errors,
+      },
+    })
 
     return stats
   } catch (error) {
-    console.error('Error during incremental sync:', error)
+    logError('Error during incremental sync', {
+      error: error instanceof Error ? error : new Error(String(error)),
+    })
     stats.errors++
     stats.endTime = new Date()
 
@@ -106,7 +120,9 @@ export async function performIncrementalSync(
         error instanceof Error ? error.message : String(error)
       )
     } catch (updateError) {
-      console.error('Failed to update sync state:', updateError)
+      logError('Failed to update sync state', {
+        error: updateError instanceof Error ? updateError : new Error(String(updateError)),
+      })
     }
 
     throw error
@@ -122,7 +138,7 @@ export async function performDeleteSync(
   config: ExtensionConfig
 ): Promise<number> {
   try {
-    console.log('Starting delete synchronization...')
+    logInfo('Starting delete synchronization')
 
     // Get all document IDs from BigQuery
     const bigQueryIds = await queryAllDocumentIds(config)
@@ -139,19 +155,21 @@ export async function performDeleteSync(
     }
 
     if (idsToDelete.length === 0) {
-      console.log('No documents to delete.')
+      logInfo('No documents to delete')
       return 0
     }
 
-    console.log(`Found ${idsToDelete.length} documents to delete`)
+    logInfo('Found documents to delete', {additionalPayload: {count: idsToDelete.length}})
 
     // Delete documents from Firestore
     const deletedCount = await deleteDocumentsBatch(db, config, idsToDelete)
-    console.log(`Delete synchronization completed. Deleted ${deletedCount} documents.`)
+    logInfo('Delete synchronization completed', {additionalPayload: {deletedCount}})
 
     return deletedCount
   } catch (error) {
-    console.error('Error during delete synchronization:', error)
+    logError('Error during delete synchronization', {
+      error: error instanceof Error ? error : new Error(String(error)),
+    })
     throw error
   }
 }
