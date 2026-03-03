@@ -26,11 +26,11 @@ export const syncBigQueryToFirestore = onSchedule(
   },
   async () => {
     try {
-      logInfo('BigQuery to Firestore Sync Started')
+      logInfo('BigQueryからFirestoreへの同期を開始します')
 
       // Load configuration
       const config = loadConfig()
-      logInfo('Configuration loaded', {
+      logInfo('設定を読み込みました', {
         additionalPayload: {
           bigQueryTable: `${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}`,
           firestoreCollection: config.firestoreCollectionPath,
@@ -46,7 +46,7 @@ export const syncBigQueryToFirestore = onSchedule(
       // Perform incremental sync
       const stats = await performIncrementalSync(db, config)
 
-      logInfo('Sync statistics', {
+      logInfo('同期統計', {
         additionalPayload: {
           created: stats.documentsCreated,
           updated: stats.documentsUpdated,
@@ -58,14 +58,14 @@ export const syncBigQueryToFirestore = onSchedule(
 
       // Perform delete sync if enabled
       if (config.enableDeleteSync) {
-        logInfo('Delete sync is enabled. Starting delete synchronization...')
+        logInfo('削除同期が有効です。削除同期を開始します')
         const deletedCount = await performDeleteSync(db, config)
-        logInfo(`Delete sync completed. Deleted ${deletedCount} documents.`)
+        logInfo(`削除同期が完了しました。${deletedCount}件のドキュメントを削除しました`)
       }
 
-      logInfo('BigQuery to Firestore Sync Completed Successfully')
+      logInfo('BigQueryからFirestoreへの同期が正常に完了しました')
     } catch (error) {
-      logError('BigQuery to Firestore Sync Failed', {
+      logError('BigQueryからFirestoreへの同期が失敗しました', {
         error: error instanceof Error ? error : new Error(String(error)),
       })
 

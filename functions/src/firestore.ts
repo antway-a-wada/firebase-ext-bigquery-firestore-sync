@@ -23,7 +23,7 @@ export async function getLastSyncTimestamp(
     .get()
 
   if (!stateDoc.exists) {
-    logInfo('No previous sync state found. This is the initial sync.')
+    logInfo('前回の同期状態が見つかりません。初回同期です')
     return null
   }
 
@@ -57,7 +57,7 @@ export async function updateSyncState(
   }
 
   await stateRef.set(updateData, {merge: true})
-  logInfo('Sync state updated', {additionalPayload: updateData})
+  logInfo('同期状態を更新しました', {additionalPayload: updateData})
 }
 
 /**
@@ -125,7 +125,9 @@ export async function getAllDocumentIds(
     ids.add(doc.id)
   })
 
-  logInfo('Found documents in Firestore collection', {additionalPayload: {count: ids.size}})
+  logInfo('Firestoreコレクションでドキュメントを見つけました', {
+    additionalPayload: {count: ids.size},
+  })
   return ids
 }
 
@@ -152,9 +154,9 @@ export async function deleteDocumentsBatch(
     try {
       await batch.commit()
       deleted += batchIds.length
-      logInfo('Deleted batch', {additionalPayload: {documentCount: batchIds.length}})
+      logInfo('バッチ削除を実行しました', {additionalPayload: {documentCount: batchIds.length}})
     } catch (error) {
-      logError('Error deleting batch', {
+      logError('バッチ削除中にエラーが発生しました', {
         error: error instanceof Error ? error : new Error(String(error)),
       })
     }

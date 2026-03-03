@@ -34,14 +34,14 @@ export async function queryUpdatedRecords(
     ORDER BY ${config.timestampColumn} ASC
   `
 
-  logInfo('Executing BigQuery query', {additionalPayload: {query}})
+  logInfo('BigQueryクエリを実行します', {additionalPayload: {query}})
 
   const [job] = await bigquery.createQueryJob({
     query,
     location: 'US',
   })
 
-  logInfo('BigQuery job started', {additionalPayload: {jobId: job.id ?? 'unknown'}})
+  logInfo('BigQueryジョブを開始しました', {additionalPayload: {jobId: job.id ?? 'unknown'}})
 
   const [rows] = await job.getQueryResults()
 
@@ -50,7 +50,7 @@ export async function queryUpdatedRecords(
     | {statistics?: {query?: {totalBytesProcessed?: string}}}
     | undefined
   const bytesProcessed = metadata?.statistics?.query?.totalBytesProcessed
-  logInfo('Query completed', {
+  logInfo('クエリが完了しました', {
     additionalPayload: {
       rowCount: rows.length,
       bytesProcessed: bytesProcessed ?? 'N/A',
@@ -76,7 +76,7 @@ export async function queryAllDocumentIds(config: ExtensionConfig): Promise<Set<
     FROM ${tableRef}
   `
 
-  logInfo('Querying all document IDs from BigQuery')
+  logInfo('BigQueryから全ドキュメントIDを取得します')
 
   const [job] = await bigquery.createQueryJob({
     query,
@@ -94,7 +94,7 @@ export async function queryAllDocumentIds(config: ExtensionConfig): Promise<Set<
     }
   }
 
-  logInfo('Found document IDs in BigQuery', {additionalPayload: {count: ids.size}})
+  logInfo('BigQueryでドキュメントIDを見つけました', {additionalPayload: {count: ids.size}})
   return ids
 }
 

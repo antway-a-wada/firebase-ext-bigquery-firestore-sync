@@ -89,7 +89,7 @@ export function transformRow(row: BigQueryRow, config: ExtensionConfig): Firesto
     const primaryKeyValue: unknown = row[config.primaryKeyColumn]
 
     if (primaryKeyValue === undefined || primaryKeyValue === null) {
-      logWarning('Row missing primary key', {details: config.primaryKeyColumn})
+      logWarning('行に主キーがありません', {details: config.primaryKeyColumn})
       return null
     }
 
@@ -128,7 +128,7 @@ export function transformRow(row: BigQueryRow, config: ExtensionConfig): Firesto
       data,
     }
   } catch (error) {
-    logError('Error transforming row', {
+    logError('行の変換中にエラーが発生しました', {
       error: error instanceof Error ? error : new Error(String(error)),
       additionalPayload: {row},
     })
@@ -149,7 +149,7 @@ export function transformRows(rows: BigQueryRow[], config: ExtensionConfig): Fir
     }
   }
 
-  logInfo('Transformation completed', {
+  logInfo('変換が完了しました', {
     additionalPayload: {
       transformedCount: documents.length,
       totalRows: rows.length,
@@ -164,13 +164,13 @@ export function transformRows(rows: BigQueryRow[], config: ExtensionConfig): Fir
 export function validateDocument(doc: FirestoreDocument): boolean {
   // Firestore document ID must not be empty
   if (!doc.id || doc.id.trim() === '') {
-    logWarning('Invalid document: empty ID')
+    logWarning('無効なドキュメント: IDが空です')
     return false
   }
 
   // Firestore document ID must not contain '/'
   if (doc.id.includes('/')) {
-    logWarning('Invalid document: ID contains "/"', {details: doc.id})
+    logWarning('無効なドキュメント: IDに"/"が含まれています', {details: doc.id})
     return false
   }
 
@@ -178,7 +178,7 @@ export function validateDocument(doc: FirestoreDocument): boolean {
   const docSize = JSON.stringify(doc.data).length
   if (docSize > 1000000) {
     // 1 MB limit
-    logWarning('Document too large', {
+    logWarning('ドキュメントが大きすぎます', {
       details: doc.id,
       additionalPayload: {sizeBytes: docSize},
     })

@@ -34,8 +34,8 @@ export async function performIncrementalSync(
   }
 
   try {
-    logInfo('Starting incremental sync')
-    logInfo('Configuration', {
+    logInfo('増分同期を開始します')
+    logInfo('設定', {
       additionalPayload: {
         dataset: config.bigqueryDataset,
         table: config.bigqueryTable,
@@ -45,16 +45,16 @@ export async function performIncrementalSync(
 
     // Get last sync timestamp
     const lastSyncTimestamp = await getLastSyncTimestamp(db, config)
-    logInfo('Last sync timestamp', {
-      details: lastSyncTimestamp?.toISOString() ?? 'None (initial sync)',
+    logInfo('前回の同期タイムスタンプ', {
+      details: lastSyncTimestamp?.toISOString() ?? 'なし（初回同期）',
     })
 
     // Query BigQuery for updated records
     const rows = await queryUpdatedRecords(config, lastSyncTimestamp)
-    logInfo('Retrieved rows from BigQuery', {additionalPayload: {rowCount: rows.length}})
+    logInfo('BigQueryから行を取得しました', {additionalPayload: {rowCount: rows.length}})
 
     if (rows.length === 0) {
-      logInfo('No new or updated records found')
+      logInfo('新規または更新されたレコードが見つかりませんでした')
       await updateSyncState(db, config, new Date(), 0)
       stats.endTime = new Date()
       return stats
@@ -62,14 +62,16 @@ export async function performIncrementalSync(
 
     // Transform rows to Firestore documents
     const documents = transformRows(rows, config)
-    logInfo('Transformed documents', {additionalPayload: {documentCount: documents.length}})
+    logInfo('ドキュメントを変換しました', {additionalPayload: {documentCount: documents.length}})
 
     // Validate documents
     const validDocuments = documents.filter((doc) => validateDocument(doc))
-    logInfo('Documents passed validation', {additionalPayload: {validCount: validDocuments.length}})
+    logInfo('ドキュメントの検証が完了しました', {
+      additionalPayload: {validCount: validDocuments.length},
+    })
 
     if (validDocuments.length === 0) {
-      logInfo('No valid documents to sync')
+      logInfo('同期する有効なドキュメントがありません')
       await updateSyncState(db, config, new Date(), 0)
       stats.endTime = new Date()
       return stats
@@ -81,7 +83,7 @@ export async function performIncrementalSync(
     stats.documentsUpdated = writeResult.updated
     stats.errors = writeResult.errors
 
-    logInfo('Write completed', {additionalPayload: writeResult})
+    logInfo('書き込みが完了しました', {additionalPayload: writeResult})
 
     // Update sync state
     const currentTimestamp = new Date()
@@ -94,7 +96,7 @@ export async function performIncrementalSync(
     )
 
     stats.endTime = new Date()
-    logInfo('Incremental sync completed', {
+    logInfo('増分同期が完了しました', {
       additionalPayload: {
         documentsCreated: stats.documentsCreated,
         documentsUpdated: stats.documentsUpdated,
@@ -105,7 +107,7 @@ export async function performIncrementalSync(
 
     return stats
   } catch (error) {
-    logError('Error during incremental sync', {
+    logError('増分同期中にエラーが発生しました', {
       error: error instanceof Error ? error : new Error(String(error)),
     })
     stats.errors++
@@ -120,7 +122,7 @@ export async function performIncrementalSync(
         error instanceof Error ? error.message : String(error)
       )
     } catch (updateError) {
-      logError('Failed to update sync state', {
+      logError('同期状態の更新に失敗しました', {
         error: updateError instanceof Error ? updateError : new Error(String(updateError)),
       })
     }
@@ -138,7 +140,7 @@ export async function performDeleteSync(
   config: ExtensionConfig
 ): Promise<number> {
   try {
-    logInfo('Starting delete synchronization')
+    logInfo('削除同期を開始します')
 
     // Get all document IDs from BigQuery
     const bigQueryIds = await queryAllDocumentIds(config)
@@ -155,19 +157,19 @@ export async function performDeleteSync(
     }
 
     if (idsToDelete.length === 0) {
-      logInfo('No documents to delete')
+      logInfo('削除するドキュメントはありません')
       return 0
     }
 
-    logInfo('Found documents to delete', {additionalPayload: {count: idsToDelete.length}})
+    logInfo('削除するドキュメントを見つけました', {additionalPayload: {count: idsToDelete.length}})
 
     // Delete documents from Firestore
     const deletedCount = await deleteDocumentsBatch(db, config, idsToDelete)
-    logInfo('Delete synchronization completed', {additionalPayload: {deletedCount}})
+    logInfo('削除同期が完了しました', {additionalPayload: {deletedCount}})
 
     return deletedCount
   } catch (error) {
-    logError('Error during delete synchronization', {
+    logError('削除同期中にエラーが発生しました', {
       error: error instanceof Error ? error : new Error(String(error)),
     })
     throw error

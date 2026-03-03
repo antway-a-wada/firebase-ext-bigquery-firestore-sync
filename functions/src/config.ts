@@ -28,12 +28,12 @@ function parseFieldMapping(mappingStr: string | undefined): Record<string, strin
   try {
     const parsed = JSON.parse(mappingStr) as unknown
     if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-      logWarning('FIELD_MAPPING must be a JSON object. Using empty mapping.')
+      logWarning('FIELD_MAPPINGはJSONオブジェクトである必要があります。空のマッピングを使用します')
       return {}
     }
     return parsed as Record<string, string>
   } catch (error) {
-    logError('Failed to parse FIELD_MAPPING', {
+    logError('FIELD_MAPPINGのパースに失敗しました', {
       error: error instanceof Error ? error : new Error(String(error)),
     })
     return {}
