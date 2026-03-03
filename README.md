@@ -241,3 +241,250 @@ If you encounter any issues or have questions:
 ---
 
 Made with ❤️ by Tsukurioki
+
+---
+---
+
+# BigQuery to Firestore Sync（日本語）
+
+**作成者**: Tsukurioki (**[tsukurioki.jp](https://tsukurioki.jp)**)
+
+**説明**: BigQueryテーブルからFirestoreコレクションへ、増分更新でデータを同期します。
+
+---
+
+## 🧩 この拡張機能をインストール
+
+### コンソール
+
+[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png "Install this extension in your Firebase project")](https://console.firebase.google.com/project/_/extensions/install?ref=tsukurioki/bigquery-firestore-sync)
+
+### Firebase CLI
+
+```bash
+firebase ext:install tsukurioki/bigquery-firestore-sync --project=projectId-here
+```
+
+---
+
+## 📝 概要
+
+この拡張機能を使用すると、BigQueryテーブルからFirestoreコレクションへデータを自動的に同期できます。タイムスタンプ列に基づいて増分同期を行い、変更されていないレコードを処理することなく、効率的にデータを更新します。
+
+### 主な機能
+
+- **増分同期**: 前回の同期以降に変更されたレコードのみを同期
+- **スケジュール更新**: Cron式を使用して同期頻度を設定可能
+- **削除同期**: BigQueryでレコードが削除された際にFirestoreドキュメントも削除するオプション機能
+- **フィールドマッピング**: BigQueryとFirestore間でフィールド名をカスタマイズ可能
+- **バッチ処理**: 設定可能なバッチサイズで大規模データセットを効率的に処理
+- **型変換**: BigQueryのデータ型をFirestore互換の型に自動変換
+
+### 動作の仕組み
+
+1. スケジュールに従い、前回の同期以降に更新されたレコードをBigQueryにクエリ
+2. 取得したレコードを変換・検証
+3. データをFirestoreにバッチで書き込み（1バッチ最大500ドキュメント）
+4. 次回実行のために最終同期タイムスタンプを保存
+5. オプションで、BigQueryで削除されたレコードをFirestoreからも削除
+
+### ユースケース
+
+- **データウェアハウスからアプリケーションデータベースへ**: データウェアハウスで処理されたデータをアプリケーションのFirestoreデータベースに同期
+- **分析から本番環境へ**: 集計された分析データをFirestoreにプッシュしてリアルタイムアクセスを実現
+- **マルチソース統合**: BigQueryで複数のソースからのデータを結合してFirestoreに同期
+- **レポートダッシュボード**: BigQueryからの最新レポートデータでFirestoreを常に更新
+
+---
+
+## 🧩 設定パラメータ
+
+インストール時に以下のパラメータを設定します：
+
+### 必須パラメータ
+
+- **BigQuery Dataset**: ソーステーブルを含むデータセット
+- **BigQuery Table**: 同期元のテーブル名
+- **Firestore Collection Path**: 同期先のFirestoreコレクション
+- **Primary Key Column**: FirestoreドキュメントIDとして使用するBigQueryの列
+- **Timestamp Column**: レコードが最後に更新された時刻を追跡する列
+- **Sync Schedule**: 同期を実行する頻度（Cron形式）
+
+### オプションパラメータ
+
+- **BigQuery Project ID**: BigQueryに別のGCPプロジェクトを使用（デフォルトはFirebaseプロジェクト）
+- **Enable Delete Sync**: BigQueryレコードが削除された際にFirestoreドキュメントを自動削除
+- **Delete Sync Schedule**: 削除チェックを実行する頻度（有効な場合）
+- **Batch Size**: バッチごとのドキュメント数（1-500、デフォルト: 500）
+- **Field Mapping**: BigQueryの列をFirestoreフィールドにマッピングするJSONオブジェクト
+- **Exclude Fields**: 同期から除外する列のカンマ区切りリスト
+
+---
+
+## 🔑 前提条件
+
+この拡張機能をインストールする前に、以下が必要です：
+
+1. **Firebaseプロジェクトのセットアップ**: まだない場合は、[Firebase Console](https://console.firebase.google.com/)で新しいFirebaseプロジェクトを作成
+
+2. **Cloud Firestoreの有効化**: Firestoreセクションに移動してデータベースを作成
+
+3. **課金の有効化**: この拡張機能にはBlaze（従量課金制）プランが必要です
+
+4. **BigQueryテーブルの作成**: BigQueryテーブルが存在し、以下を含むことを確認：
+   - 一意の識別子列（ドキュメントID用）
+   - タイムスタンプ列（増分同期用）
+
+5. **権限の付与**: 拡張機能は必要な権限を自動的に要求しますが、FirebaseプロジェクトがBigQueryプロジェクトから読み取りアクセスできることを確認してください
+
+---
+
+## 💰 課金
+
+この拡張機能は以下のFirebaseおよびGoogle Cloud Platformサービスを使用し、料金が発生する場合があります：
+
+- **Cloud Functions**: スケジュール関数の実行（[料金](https://firebase.google.com/pricing)）
+- **Cloud Firestore**: ドキュメント書き込みとストレージ（[料金](https://firebase.google.com/docs/firestore/quotas)）
+- **BigQuery**: クエリ実行とスキャンされたデータ（[料金](https://cloud.google.com/bigquery/pricing)）
+
+これらのサービスの使用に関連するコストについては、お客様の責任となります。
+
+### コスト最適化のヒント
+
+- BigQueryでスキャンされるデータを最小化するため、タイムスタンプ列を効果的に使用
+- 必要に応じて同期頻度を調整（頻度が低い = コストが低い）
+- 不要なデータの同期を避けるため`EXCLUDE_FIELDS`を使用
+- タイムスタンプ列でBigQueryテーブルをパーティション分割することを検討
+- 不要な場合は削除同期を無効化してフルテーブルスキャンを回避
+
+---
+
+## 📊 モニタリング
+
+インストール後、拡張機能のアクティビティを監視できます：
+
+1. **Cloud Functionsログ**: Firebase ConsoleのFunctionsでログを表示
+2. **拡張機能メトリクス**: Extensionsダッシュボードで実行履歴を確認
+3. **Firestoreアクティビティ**: Firestoreコンソールでドキュメント書き込みを監視
+4. **BigQueryクエリ履歴**: BigQueryコンソールでクエリ実行を確認
+
+### 監視すべき主要メトリクス
+
+- 同期実行時間
+- 実行ごとに同期されたドキュメント数
+- BigQueryでスキャンされたバイト数
+- Firestore書き込み操作
+- エラー率とタイプ
+
+---
+
+## 🔧 高度な使用方法
+
+### フィールドマッピングの例
+
+BigQueryの列がsnake_caseを使用しているが、FirestoreではcamelCaseを使いたい場合：
+
+```json
+{
+  "user_id": "userId",
+  "created_at": "createdAt",
+  "updated_at": "updatedAt",
+  "first_name": "firstName",
+  "last_name": "lastName"
+}
+```
+
+### ネストされたコレクション
+
+ワイルドカードを使用してサブコレクションに同期できます：
+
+```
+users/{userId}/orders
+```
+
+拡張機能は各一意の`userId`値に対して個別のドキュメントを作成します。
+
+### Cronスケジュールの例
+
+- 1時間ごと: `0 * * * *`
+- 6時間ごと: `0 */6 * * *`
+- 毎日午前0時（UTC）: `0 0 * * *`
+- 平日の午前9時（UTC）: `0 9 * * 1-5`
+
+---
+
+## ⚠️ 重要な考慮事項
+
+### データ整合性
+
+- この拡張機能は結果整合性を提供し、リアルタイム同期ではありません
+- BigQueryの更新とFirestoreへの反映の間に遅延が発生する可能性があります
+- 同期中のBigQueryの同時更新は競合状態を引き起こす可能性があります
+
+### パフォーマンス
+
+- 非常に大規模なデータセット（数百万レコード）の場合、初期同期に時間がかかる場合があります
+- オフピーク時に手動で初期同期を実行することを検討してください
+- 多数の同時クエリがある場合は、BigQueryスロット使用量を監視してください
+
+### 制限事項
+
+- 最大バッチサイズは500ドキュメント（Firestoreの制限）
+- 関数タイムアウトは9分（540秒）
+- 非常に大規模な同期操作は、複数回の実行に分割する必要がある場合があります
+- Firestoreドキュメントサイズの制限は1 MB
+
+---
+
+## 🐛 トラブルシューティング
+
+### よくある問題
+
+**同期が実行されない**
+- Cloud Functionsログでエラーを確認
+- Cronスケジュールが正しいことを確認
+- 関数がデプロイされていることを確認
+
+**権限エラー**
+- BigQueryデータセットの権限を確認
+- Firestoreセキュリティルールを確認
+- サービスアカウントに必要なロールがあることを確認
+
+**タイムアウトエラー**
+- バッチサイズを減らす
+- 同期頻度を増やして、より小さいチャンクを処理
+- BigQueryテーブルのパーティション分割を検討
+
+**データ型エラー**
+- フィールドマッピング設定を確認
+- 互換性のないBigQuery型を確認（例：GEOGRAPHY）
+- 問題のある列にはEXCLUDE_FIELDSを使用
+
+---
+
+## 📚 参考資料
+
+- [Firebase Extensions ドキュメント](https://firebase.google.com/docs/extensions)
+- [BigQuery ドキュメント](https://cloud.google.com/bigquery/docs)
+- [Firestore ドキュメント](https://firebase.google.com/docs/firestore)
+- [Cloud Functions スケジュール関数](https://firebase.google.com/docs/functions/schedule-functions)
+
+---
+
+## ライセンス
+
+Apache-2.0
+
+---
+
+## サポート
+
+問題が発生した場合や質問がある場合：
+
+1. [GitHubリポジトリ](https://github.com/antway-a-wada/firebase-ext-bigquery-firestore-sync)で既知の問題を確認
+2. Cloud Functionsログでエラーの詳細を確認
+3. 再現手順を含むissueをGitHubで開く
+
+---
+
+Tsukuriokiが❤️を込めて作成
