@@ -88,7 +88,7 @@ export function transformRow(
   config: ExtensionConfig
 ): FirestoreDocument | null {
   try {
-    const primaryKeyValue = row[config.primaryKeyColumn];
+    const primaryKeyValue: unknown = row[config.primaryKeyColumn];
     
     if (primaryKeyValue === undefined || primaryKeyValue === null) {
       console.warn('Row missing primary key:', config.primaryKeyColumn);
@@ -96,10 +96,19 @@ export function transformRow(
     }
     
     // Convert primary key to string, handling objects
-    const documentId =
-      typeof primaryKeyValue === 'object'
-        ? JSON.stringify(primaryKeyValue)
-        : String(primaryKeyValue);
+    let documentId: string;
+    if (typeof primaryKeyValue === 'object' && primaryKeyValue !== null) {
+      documentId = JSON.stringify(primaryKeyValue);
+    } else if (
+      typeof primaryKeyValue === 'string' ||
+      typeof primaryKeyValue === 'number' ||
+      typeof primaryKeyValue === 'boolean'
+    ) {
+      documentId = String(primaryKeyValue);
+    } else {
+      // Fallback for other types
+      documentId = JSON.stringify(primaryKeyValue);
+    }
 
     const data: Record<string, unknown> = {};
 
