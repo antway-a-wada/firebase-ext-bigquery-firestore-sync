@@ -20,10 +20,10 @@ admin.initializeApp();
 export const syncBigQueryToFirestore = onSchedule(
   {
     schedule: 'every 1 hours', // This will be overridden by extension.yaml
-    timeoutSeconds: 540, // 9 minutes
+    timeoutSeconds: 1800, // 30 minutes
     memory: '512MiB',
   },
-  async (event) => {
+  async () => {
     try {
       console.log('=== BigQuery to Firestore Sync Started ===');
 

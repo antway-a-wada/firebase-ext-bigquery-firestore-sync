@@ -6,7 +6,7 @@
  * Represents a row from BigQuery
  */
 export interface BigQueryRow {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -14,7 +14,7 @@ export interface BigQueryRow {
  */
 export interface FirestoreDocument {
   id: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 /**

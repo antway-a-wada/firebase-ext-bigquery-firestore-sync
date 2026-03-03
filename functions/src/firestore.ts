@@ -3,6 +3,7 @@
  */
 
 import * as admin from 'firebase-admin';
+
 import {ExtensionConfig} from './config';
 import {FirestoreDocument, SyncState} from './types';
 
@@ -116,8 +117,8 @@ export async function getAllDocumentIds(
   const ids = new Set<string>();
   const collectionRef = db.collection(config.firestoreCollectionPath);
 
-  let query = collectionRef.select();
-  let snapshot = await query.get();
+  const query = collectionRef.select();
+  const snapshot = await query.get();
 
   snapshot.docs.forEach(doc => {
     ids.add(doc.id);

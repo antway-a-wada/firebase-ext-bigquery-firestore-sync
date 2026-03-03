@@ -69,14 +69,14 @@ export function loadConfig(): ExtensionConfig {
   }
 
   const config: ExtensionConfig = {
-    bigqueryProjectId: process.env.BIGQUERY_PROJECT_ID || process.env.PROJECT_ID || '',
+    bigqueryProjectId: process.env.BIGQUERY_PROJECT_ID ?? process.env.PROJECT_ID ?? '',
     bigqueryDataset: process.env.BIGQUERY_DATASET!,
     bigqueryTable: process.env.BIGQUERY_TABLE!,
     firestoreCollectionPath: process.env.FIRESTORE_COLLECTION_PATH!,
     primaryKeyColumn: process.env.PRIMARY_KEY_COLUMN!,
     timestampColumn: process.env.TIMESTAMP_COLUMN!,
     enableDeleteSync: process.env.ENABLE_DELETE_SYNC === 'true',
-    batchSize: parseInt(process.env.BATCH_SIZE || '500', 10),
+    batchSize: parseInt(process.env.BATCH_SIZE ?? '500', 10),
     fieldMapping: parseFieldMapping(process.env.FIELD_MAPPING),
     excludeFields: parseExcludeFields(process.env.EXCLUDE_FIELDS),
   };

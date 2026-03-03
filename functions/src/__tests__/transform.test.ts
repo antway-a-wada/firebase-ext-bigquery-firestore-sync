@@ -92,7 +92,7 @@ describe('transformRow', () => {
     const result = transformRow(row, mockConfig);
 
     expect(result?.data.created_at).toBeInstanceOf(Date);
-    expect(result?.data.created_at.toISOString()).toBe('2024-01-01T12:00:00.000Z');
+    expect((result?.data.created_at as Date).toISOString()).toBe('2024-01-01T12:00:00.000Z');
   });
 
   it('should convert BigQuery DATE string to Date', () => {

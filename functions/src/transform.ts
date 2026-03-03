@@ -63,14 +63,14 @@ function convertValue(value: any): any {
 
   // BigQuery ARRAY
   if (Array.isArray(value)) {
-    return value.map((item) => convertValue(item));
+    return value.map((item: unknown): unknown => convertValue(item));
   }
 
   // BigQuery STRUCT/RECORD
-  if (typeof value === 'object') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const converted: Record<string, any> = {};
-    for (const [key, val] of Object.entries(value)) {
+  if (typeof value === 'object' && value !== null) {
+    const converted: Record<string, unknown> = {};
+    const entries = Object.entries(value as Record<string, unknown>);
+    for (const [key, val] of entries) {
       converted[key] = convertValue(val);
     }
     return converted;
@@ -95,9 +95,13 @@ export function transformRow(
       return null;
     }
     
-    const documentId = String(primaryKeyValue);
+    // Convert primary key to string, handling objects
+    const documentId =
+      typeof primaryKeyValue === 'object'
+        ? JSON.stringify(primaryKeyValue)
+        : String(primaryKeyValue);
 
-    const data: Record<string, any> = {};
+    const data: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(row)) {
       // Skip excluded fields
