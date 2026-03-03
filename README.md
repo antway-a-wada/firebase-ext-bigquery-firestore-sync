@@ -183,7 +183,7 @@ The extension will create separate documents for each unique `userId` value.
 ### Limitations
 
 - Maximum batch size is 500 documents (Firestore limit)
-- Function timeout is 9 minutes (540 seconds)
+- Function timeout is 30 minutes (1800 seconds)
 - Very large sync operations may need to be split across multiple runs
 - Firestore document size limit is 1 MB
 
@@ -430,7 +430,7 @@ users/{userId}/orders
 ### 制限事項
 
 - 最大バッチサイズは500ドキュメント（Firestoreの制限）
-- 関数タイムアウトは9分（540秒）
+- 関数タイムアウトは30分（1800秒）
 - 非常に大規模な同期操作は、複数回の実行に分割する必要がある場合があります
 - Firestoreドキュメントサイズの制限は1 MB
 
