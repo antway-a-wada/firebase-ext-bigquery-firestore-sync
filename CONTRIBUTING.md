@@ -15,7 +15,7 @@ Thank you for your interest in contributing to this Firebase Extension!
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/tsukurioki/firebase-ext-bigquery-firestore-sync.git
+git clone https://github.com/antway-a-wada/firebase-ext-bigquery-firestore-sync.git
 cd firebase-ext-bigquery-firestore-sync
 ```
 

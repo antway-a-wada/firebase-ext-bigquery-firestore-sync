@@ -72,9 +72,9 @@
 1. [Firebase Extensions Publisher Portal](https://console.firebase.google.com/project/_/extensions/publishers) にアクセス
 2. **Create Publisher** をクリック
 3. 以下の情報を入力：
-   - Publisher ID: `tsukurioki` または `antway-a-wada`
-   - Publisher Name: `Tsukurioki`
-   - Website: `https://tsukurioki.jp`
+   - Publisher ID: `antway` または `antway-inc`
+   - Publisher Name: `Antway.inc`
+   - Website: `https://antway.co.jp`
    - Support Email: あなたのサポートメールアドレス
 
 #### 4.2 拡張機能を登録
@@ -84,7 +84,7 @@
 firebase ext:dev:register
 
 # 対話式で以下を入力:
-# - Publisher ID: tsukurioki
+# - Publisher ID: antway
 # - Extension ID: bigquery-firestore-sync
 # - GitHub Repository: antway-a-wada/firebase-ext-bigquery-firestore-sync
 ```
@@ -109,7 +109,7 @@ firebase ext:install . --project=test-project-id
 
 ```bash
 # 拡張機能を公開
-firebase ext:dev:publish tsukurioki/bigquery-firestore-sync@0.1.2
+firebase ext:dev:publish antway/bigquery-firestore-sync@0.1.2
 
 # 公開が承認されるまで待機（通常1-3営業日）
 ```
@@ -126,8 +126,8 @@ firebase ext:dev:publish tsukurioki/bigquery-firestore-sync@0.1.2
 
 ### 著者情報
 
-- [x] `author.authorName`: Tsukurioki
-- [x] `author.url`: https://tsukurioki.jp
+- [x] `author.authorName`: Antway.inc
+- [x] `author.url`: https://antway.co.jp
 
 ### 権限とAPI
 
@@ -168,7 +168,7 @@ Firebase Extensionsチームが以下を確認します：
 # 2. CHANGELOGを更新
 # 3. GitHub Releaseを作成
 # 4. 新バージョンを公開
-firebase ext:dev:publish tsukurioki/bigquery-firestore-sync@0.1.3
+firebase ext:dev:publish antway/bigquery-firestore-sync@0.1.3
 ```
 
 ### 使用状況の確認
@@ -200,7 +200,7 @@ Firebase Consoleで確認できる項目：
 公開後、READMEにインストールバッジを追加：
 
 ```markdown
-[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png)](https://console.firebase.google.com/project/_/extensions/install?ref=tsukurioki/bigquery-firestore-sync)
+[![Install this extension in your Firebase project](https://www.gstatic.com/mobilesdk/210513_mobilesdk/install-extension.png)](https://console.firebase.google.com/project/_/extensions/install?ref=antway/bigquery-firestore-sync)
 ```
 
 ## 📚 参考リンク

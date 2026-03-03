@@ -1,6 +1,6 @@
 # BigQuery to Firestore Sync
 
-**Author**: Tsukurioki (**[tsukurioki.jp](https://tsukurioki.jp)**)
+**Author**: Antway.inc (**[Antway.inc](https://antway.co.jp)**)
 
 **Description**: Syncs data from BigQuery tables to Firestore collections with incremental updates.
 
@@ -263,7 +263,7 @@ Made with ❤️ by Tsukurioki
 
 # BigQuery to Firestore Sync（日本語）
 
-**作成者**: Tsukurioki (**[tsukurioki.jp](https://tsukurioki.jp)**)
+**作成者**: Antway.inc (**[antway.co.jp](https://antway.co.jp)**)
 
 **説明**: BigQueryテーブルからFirestoreコレクションへ、増分更新でデータを同期します。
 

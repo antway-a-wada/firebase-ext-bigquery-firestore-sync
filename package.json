@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tsukurioki/firebase-ext-bigquery-firestore-sync.git"
+    "url": "https://github.com/antway-a-wada/firebase-ext-bigquery-firestore-sync.git"
   },
   "keywords": [
     "firebase",
