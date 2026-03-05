@@ -61,16 +61,107 @@ export async function updateSyncState(
 }
 
 /**
+ * Get existing documents from Firestore for diff checking
+ */
+export async function getExistingDocuments(
+  db: admin.firestore.Firestore,
+  config: ExtensionConfig,
+  documentIds: string[]
+): Promise<Map<string, Record<string, unknown>>> {
+  const existingDocs = new Map<string, Record<string, unknown>>()
+
+  if (documentIds.length === 0) {
+    return existingDocs
+  }
+
+  const collectionRef = db.collection(config.firestoreCollectionPath)
+
+  // Process in batches of 500 (Firestore limit for 'in' queries is 30, so we use getAll)
+  for (let i = 0; i < documentIds.length; i += 500) {
+    const batchIds = documentIds.slice(i, i + 500)
+    const docRefs = batchIds.map((id) => collectionRef.doc(id))
+
+    try {
+      const snapshots = await db.getAll(...docRefs)
+      for (const snapshot of snapshots) {
+        if (snapshot.exists) {
+          existingDocs.set(snapshot.id, snapshot.data() as Record<string, unknown>)
+        }
+      }
+    } catch (error) {
+      logError('既存ドキュメントの取得中にエラーが発生しました', {
+        error: error instanceof Error ? error : new Error(String(error)),
+        additionalPayload: {batchSize: batchIds.length},
+      })
+    }
+  }
+
+  logInfo('既存ドキュメントを取得しました', {additionalPayload: {count: existingDocs.size}})
+  return existingDocs
+}
+
+/**
+ * Check if document data has changed
+ */
+export function hasDocumentChanged(
+  newData: Record<string, unknown>,
+  existingData: Record<string, unknown> | undefined
+): boolean {
+  if (!existingData) {
+    return true // New document
+  }
+
+  // Deep comparison using JSON serialization
+  const newDataStr = JSON.stringify(sortObjectKeys(newData))
+  const existingDataStr = JSON.stringify(sortObjectKeys(existingData))
+
+  return newDataStr !== existingDataStr
+}
+
+/**
+ * Sort object keys for consistent comparison
+ */
+function sortObjectKeys(obj: unknown): unknown {
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sortObjectKeys(item))
+  }
+
+  const record = obj as Record<string, unknown>
+  return Object.keys(record)
+    .sort()
+    .reduce((result: Record<string, unknown>, key) => {
+      const value = record[key]
+      result[key] = sortObjectKeys(value)
+      return result
+    }, {})
+}
+
+/**
  * Write documents to Firestore in batches
  */
 export async function writeDocumentsBatch(
   db: admin.firestore.Firestore,
   config: ExtensionConfig,
   documents: FirestoreDocument[]
-): Promise<{created: number; updated: number; errors: number}> {
+): Promise<{created: number; updated: number; skipped: number; errors: number}> {
   let created = 0
   let updated = 0
+  let skipped = 0
   let errors = 0
+
+  // Get existing documents if diff check is enabled
+  const existingDocs: Map<string, Record<string, unknown>> | undefined = config.enableDiffCheck
+    ? await (async (): Promise<Map<string, Record<string, unknown>>> => {
+        const documentIds = documents.map((doc) => doc.id)
+        const docs = await getExistingDocuments(db, config, documentIds)
+        logInfo('差分チェックが有効です。変更があるドキュメントのみを更新します')
+        return docs
+      })()
+    : undefined
 
   // Split documents into batches of config.batchSize
   for (let i = 0; i < documents.length; i += config.batchSize) {
@@ -78,17 +169,33 @@ export async function writeDocumentsBatch(
     const batchDocs = documents.slice(i, i + config.batchSize)
 
     for (const doc of batchDocs) {
-      try {
-        const docRef = db.collection(config.firestoreCollectionPath).doc(doc.id)
+      const collectionRef = db.collection(config.firestoreCollectionPath)
+      const docRef = collectionRef.doc(doc.id)
 
-        // Check if document exists to track created vs updated
-        const existing = await docRef.get()
-        if (existing.exists) {
+      // Check if document has changed (if diff check is enabled)
+      if (existingDocs !== undefined) {
+        const existingData = existingDocs.get(doc.id)
+        if (!hasDocumentChanged(doc.data, existingData)) {
+          skipped++
+          continue // Skip unchanged document
+        }
+
+        if (existingData) {
           updated++
         } else {
           created++
         }
+      } else {
+        // Without diff check, check if document exists
+        const exists = await docRef.get().then((snapshot) => snapshot.exists)
+        if (exists) {
+          updated++
+        } else {
+          created++
+        }
+      }
 
+      try {
         batch.set(docRef, doc.data, {merge: true})
       } catch (error) {
         console.error('Error preparing document for batch:', doc.id, error)
@@ -105,7 +212,7 @@ export async function writeDocumentsBatch(
     }
   }
 
-  return {created, updated, errors}
+  return {created, updated, skipped, errors}
 }
 
 /**

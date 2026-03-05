@@ -15,6 +15,7 @@ const mockConfig: ExtensionConfig = {
   firestoreCollectionPath: 'test_collection',
   primaryKeyColumn: 'id',
   timestampColumn: 'updated_at',
+  enableDiffCheck: false,
   enableDeleteSync: false,
   batchSize: 500,
   fieldMapping: {},

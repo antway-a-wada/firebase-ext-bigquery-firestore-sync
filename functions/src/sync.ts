@@ -27,6 +27,7 @@ export async function performIncrementalSync(
   const stats: SyncStats = {
     documentsCreated: 0,
     documentsUpdated: 0,
+    documentsSkipped: 0,
     documentsDeleted: 0,
     errors: 0,
     startTime: new Date(),
@@ -88,9 +89,17 @@ export async function performIncrementalSync(
     const writeResult = await writeDocumentsBatch(db, config, validDocuments)
     stats.documentsCreated = writeResult.created
     stats.documentsUpdated = writeResult.updated
+    stats.documentsSkipped = writeResult.skipped
     stats.errors = writeResult.errors
 
-    logInfo('書き込みが完了しました', {additionalPayload: writeResult})
+    logInfo('書き込みが完了しました', {
+      additionalPayload: {
+        created: writeResult.created,
+        updated: writeResult.updated,
+        skipped: writeResult.skipped,
+        errors: writeResult.errors,
+      },
+    })
 
     // Update sync state
     const currentTimestamp = new Date()
@@ -107,6 +116,7 @@ export async function performIncrementalSync(
       additionalPayload: {
         documentsCreated: stats.documentsCreated,
         documentsUpdated: stats.documentsUpdated,
+        documentsSkipped: stats.documentsSkipped,
         documentsDeleted: stats.documentsDeleted,
         errors: stats.errors,
       },

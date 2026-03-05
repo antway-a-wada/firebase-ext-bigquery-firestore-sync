@@ -33,6 +33,7 @@ export interface SyncState {
 export interface SyncStats {
   documentsCreated: number
   documentsUpdated: number
+  documentsSkipped: number
   documentsDeleted: number
   errors: number
   startTime: Date

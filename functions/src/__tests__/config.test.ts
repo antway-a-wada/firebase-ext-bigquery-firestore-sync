@@ -33,6 +33,7 @@ describe('loadConfig', () => {
     expect(config.primaryKeyColumn).toBe('id')
     expect(config.timestampColumn).toBe('updated_at')
     expect(config.batchSize).toBe(500)
+    expect(config.enableDiffCheck).toBe(false)
     expect(config.enableDeleteSync).toBe(false)
   })
 

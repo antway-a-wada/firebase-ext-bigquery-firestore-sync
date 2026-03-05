@@ -35,8 +35,9 @@ export const syncBigQueryToFirestore = onSchedule(
           bigQueryTable: `${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}`,
           firestoreCollection: config.firestoreCollectionPath,
           primaryKey: config.primaryKeyColumn,
-          timestampColumn: config.timestampColumn,
+          timestampColumn: config.timestampColumn ?? '未設定（全件同期）',
           batchSize: config.batchSize,
+          diffCheck: config.enableDiffCheck,
           deleteSync: config.enableDeleteSync,
         },
       })
@@ -50,6 +51,7 @@ export const syncBigQueryToFirestore = onSchedule(
         additionalPayload: {
           created: stats.documentsCreated,
           updated: stats.documentsUpdated,
+          skipped: stats.documentsSkipped,
           deleted: stats.documentsDeleted,
           errors: stats.errors,
           duration: stats.endTime.getTime() - stats.startTime.getTime(),

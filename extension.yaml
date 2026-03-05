@@ -151,6 +151,21 @@ params:
     default: "0 * * * *"
     required: true
 
+  - param: ENABLE_DIFF_CHECK
+    label: Enable differential update
+    description: >-
+      If enabled, only documents with actual data changes will be updated.
+      This reduces Firestore write costs but increases read operations.
+      Recommended for tables with low change rates (< 30% of records updated per sync).
+    type: select
+    options:
+      - label: Enabled
+        value: true
+      - label: Disabled
+        value: false
+    default: false
+    required: true
+
   - param: ENABLE_DELETE_SYNC
     label: Enable delete synchronization
     description: >-
