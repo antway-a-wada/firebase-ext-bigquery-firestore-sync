@@ -6,7 +6,6 @@
   "engines": {
     "node": "20"
   },
-  "type": "module",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
