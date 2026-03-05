@@ -31,7 +31,12 @@ firebase ext:install . --project=<your-project-id>
 
 #### Firebase CLI
 ```bash
+# 単一インスタンス
 firebase ext:install antway-a-wada/bigquery-firestore-sync --project=projectId-here
+
+# 複数インスタンス
+firebase ext:install antway-a-wada/bigquery-firestore-sync --instance-id=users-sync --project=projectId-here
+firebase ext:install antway-a-wada/bigquery-firestore-sync --instance-id=orders-sync --project=projectId-here
 ```
 
 ---
@@ -295,9 +300,15 @@ cd firebase-ext-bigquery-firestore-sync
 # Firebaseプロジェクトを選択
 firebase use <your-project-id>
 
-# ローカルからインストール
+# ローカルからインストール（単一インスタンス）
 firebase ext:install . --project=<your-project-id>
+
+# 複数インスタンスをカスタム名でインストール
+firebase ext:install . --instance-id=users-sync --project=<your-project-id>
+firebase ext:install . --instance-id=orders-sync --project=<your-project-id>
 ```
+
+**注意**: `--instance-id`を使用することで、異なる設定で複数のインスタンスをインストールできます（例: usersテーブル→usersコレクション、ordersテーブル→ordersコレクション）。
 
 ### 公開後のインストール（将来的に公開する場合）
 
