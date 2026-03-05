@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-02-20
+
+### Added
+- **Differential Update Mode**: New `ENABLE_DIFF_CHECK` parameter to compare existing Firestore documents with new data
+  - Only writes documents that have actual data changes
+  - Reduces Firestore write costs by up to 90% for low-change-rate tables
+  - Adds `documentsSkipped` to sync statistics
+  - Most cost-effective when change rate is < 30%
+- **Full Sync Mode**: Support for tables without timestamp columns
+  - `TIMESTAMP_COLUMN` is now optional
+  - When not provided, all records are synced on every run
+- Cost comparison table in README with monthly cost estimates
+- New helper functions:
+  - `getExistingDocuments()`: Efficiently fetches existing documents for comparison
+  - `hasDocumentChanged()`: Deep comparison of document data
+  - `sortObjectKeys()`: Ensures consistent JSON comparison
+
+### Changed
+- `TIMESTAMP_COLUMN` parameter is now optional (was required)
+- `ExtensionConfig` interface now includes `enableDiffCheck: boolean`
+- `SyncStats` interface now includes `documentsSkipped: number`
+- Updated all mock configs in tests to include `enableDiffCheck` field
+- Enhanced logging to include diff check status and skipped document counts
+
+### Performance
+- **Write Cost Reduction**: ~70-90% reduction in Firestore writes when change rate is < 30%
+- **Read Cost Increase**: Adds Firestore read operations for existing documents (when diff check is enabled)
+- **Trade-off**: Best for scenarios where read:write cost ratio favors reducing writes
+
 ## [0.1.2] - 2026-02-20
 
 ### Changed
