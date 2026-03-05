@@ -79,7 +79,7 @@ export function loadConfig(): ExtensionConfig {
     bigqueryTable: process.env.BIGQUERY_TABLE!,
     firestoreCollectionPath: process.env.FIRESTORE_COLLECTION_PATH!,
     primaryKeyColumn: process.env.PRIMARY_KEY_COLUMN!,
-    timestampColumn: process.env.TIMESTAMP_COLUMN || undefined,
+    timestampColumn: process.env.TIMESTAMP_COLUMN ?? undefined,
     enableDiffCheck: process.env.ENABLE_DIFF_CHECK === 'true',
     enableDeleteSync: process.env.ENABLE_DELETE_SYNC === 'true',
     batchSize: parseInt(process.env.BATCH_SIZE ?? '500', 10),
