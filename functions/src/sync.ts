@@ -43,11 +43,18 @@ export async function performIncrementalSync(
       },
     })
 
-    // Get last sync timestamp
-    const lastSyncTimestamp = await getLastSyncTimestamp(db, config)
-    logInfo('前回の同期タイムスタンプ', {
-      details: lastSyncTimestamp?.toISOString() ?? 'なし（初回同期）',
-    })
+    // Get last sync timestamp (only if timestamp column is configured)
+    const lastSyncTimestamp = config.timestampColumn
+      ? await getLastSyncTimestamp(db, config)
+      : null
+    
+    if (!config.timestampColumn) {
+      logInfo('全件同期モード: タイムスタンプカラムが設定されていないため、すべてのレコードを同期します')
+    } else {
+      logInfo('前回の同期タイムスタンプ', {
+        details: lastSyncTimestamp?.toISOString() ?? 'なし（初回同期）',
+      })
+    }
 
     // Query BigQuery for updated records
     const rows = await queryUpdatedRecords(config, lastSyncTimestamp)

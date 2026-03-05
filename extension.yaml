@@ -136,9 +136,10 @@ params:
     description: >-
       The BigQuery column name containing the last update timestamp.
       Used for incremental sync to detect changes since last sync.
+      If not provided, all records will be synced on every run (full sync).
     type: string
     example: updated_at
-    required: true
+    required: false
 
   - param: SYNC_SCHEDULE
     label: Sync schedule

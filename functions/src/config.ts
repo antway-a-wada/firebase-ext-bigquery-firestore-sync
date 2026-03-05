@@ -10,7 +10,7 @@ export interface ExtensionConfig {
   bigqueryTable: string
   firestoreCollectionPath: string
   primaryKeyColumn: string
-  timestampColumn: string
+  timestampColumn: string | undefined
   enableDeleteSync: boolean
   batchSize: number
   fieldMapping: Record<string, string>

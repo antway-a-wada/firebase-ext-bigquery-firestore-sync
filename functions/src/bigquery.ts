@@ -21,18 +21,30 @@ export async function queryUpdatedRecords(
 
   const tableRef = `\`${config.bigqueryProjectId}.${config.bigqueryDataset}.${config.bigqueryTable}\``
 
-  let whereClause = ''
-  if (sinceTimestamp) {
-    const timestampStr = sinceTimestamp.toISOString()
-    whereClause = `WHERE ${config.timestampColumn} > TIMESTAMP('${timestampStr}')`
+  let query: string
+  
+  if (!config.timestampColumn) {
+    // Full sync mode: no timestamp column provided
+    logInfo('タイムスタンプカラムが設定されていません。全件同期モードで実行します')
+    query = `
+      SELECT *
+      FROM ${tableRef}
+    `
+  } else {
+    // Incremental sync mode with timestamp column
+    let whereClause = ''
+    if (sinceTimestamp) {
+      const timestampStr = sinceTimestamp.toISOString()
+      whereClause = `WHERE ${config.timestampColumn} > TIMESTAMP('${timestampStr}')`
+    }
+    
+    query = `
+      SELECT *
+      FROM ${tableRef}
+      ${whereClause}
+      ORDER BY ${config.timestampColumn} ASC
+    `
   }
-
-  const query = `
-    SELECT *
-    FROM ${tableRef}
-    ${whereClause}
-    ORDER BY ${config.timestampColumn} ASC
-  `
 
   logInfo('BigQueryクエリを実行します', {additionalPayload: {query}})
 
