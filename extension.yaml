@@ -36,7 +36,7 @@ resources:
       Scheduled function that syncs data from BigQuery to Firestore
     properties:
       location: ${LOCATION}
-      runtime: nodejs20
+      runtime: nodejs22
       scheduleTrigger:
         schedule: ${SYNC_SCHEDULE}
       availableMemoryMb: 512
